@@ -1,0 +1,21 @@
+{
+  "name": "tryout",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "echo 'ALL GOOD'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gpaucot/tryout.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gpaucot/tryout/issues"
+  },
+  "homepage": "https://github.com/gpaucot/tryout#readme"
+}
