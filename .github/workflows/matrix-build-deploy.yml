@@ -12,4 +12,5 @@ jobs:
           node-version: 14
       - name: Build and Test
         run: |
+          npm install --no-fund --no-audit
           npm run build
