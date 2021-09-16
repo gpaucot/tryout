@@ -1,8 +1,12 @@
 on: [push]
 jobs:
   build:
-    strategy:
-      matrix:
-        platform: [ubuntu-latest, macos-latest, windows-latest]
-    runs-on: ${{ matrix.platform }}
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: gpaucot/tryout@master
+      - name: Build code
+        run: npm run build
+
 
