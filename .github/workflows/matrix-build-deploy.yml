@@ -5,7 +5,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
-        uses: gpaucot/tryout@master
+        uses: actions/checkout@master
       - name: Build code
         run: npm run build
 
