@@ -31,7 +31,7 @@ module.exports = function (config) {
             reporters: [{ type: 'html' }, { type: 'text-summary' }],
         },
         junitReporter: {
-            outputFile: require('path').join(__dirname, '..', 'junit-unit-frontend.xml'),
+            outputFile: require('path').join(__dirname, 'junit-unit-frontend.xml'),
             suite: '',
         },
         reporters: ['progress', 'kjhtml', 'junit'],
@@ -39,7 +39,7 @@ module.exports = function (config) {
         colors: true,
         logLevel: config.LOG_INFO,
         autoWatch: true,
-        browsers: ['Chrome'],
+        browsers: ['Chromium'],
         singleRun: false,
         restartOnFileChange: true,
     });
