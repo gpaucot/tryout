@@ -20,3 +20,8 @@ jobs:
         if: always()
         with:
           files: projects/**/junit-unit-frontend.xml
+      - name: Cuicui
+        uses: actions/upload-artifact@v2
+        with:
+          name: my-artifact
+          path: projects/demo/junit-unit-frontend.xml
