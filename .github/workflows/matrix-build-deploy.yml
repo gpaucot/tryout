@@ -21,7 +21,6 @@ jobs:
         with:
           files: projects/**/junit-unit-frontend.xml
       - name: Cuicui
-        uses: actions/upload-artifact@v2
+        uses: pavi2410/html-preview-action@v2
         with:
-          name: my-artifact
-          path: projects/demo/pouet.html
+          html_file: projects/demo/pouet.html
