@@ -6,7 +6,7 @@
 
 ## 1. Overview & Goal
 
-Build the **foundation** for a new Angular 21 application: a modular Nx monorepo, an internal Atomic-Design design system, and a thin shell app that ties them together. The goal is a well-architected, boundary-enforced starting point — *not* a finished product. Domain/business features come later and are explicitly out of scope here.
+Build the **foundation** for a new Angular 21 application: a modular Nx monorepo, an internal Atomic-Design design system, and a thin dash app that ties them together. The goal is a well-architected, boundary-enforced starting point — *not* a finished product. Domain/business features come later and are explicitly out of scope here.
 
 The foundation must demonstrate, end to end, one complete **atomic vertical slice**: an atom (Button) composed up through a molecule, organism, and template, into a routed page. That slice proves the architecture, styling, testing, and module boundaries all work together.
 
@@ -22,7 +22,7 @@ A library exposes a single narrow public API (one `index.ts` barrel) and hides a
 
 - ❌ No business/domain features (no auth, no real data models, no CRUD).
 - ❌ No `data-access` layer yet (HTTP/state) — reserved as a future extension.
-- ❌ No Storybook. Components are developed/documented via the shell app and unit tests.
+- ❌ No Storybook. Components are developed/documented via the dash app and unit tests.
 - ❌ No npm publishing. The design system is an **internal** library only.
 - ❌ No e2e framework, no CI/CD pipeline, no deployment config in this phase.
 - ❌ No SSR/hydration, i18n, or PWA setup in this phase.
@@ -47,14 +47,14 @@ A library exposes a single narrow public API (one `index.ts` barrel) and hides a
 - Bun + Nx generators occasionally assume npm-style layouts (postinstall/native binaries) — verify optional peers are installed explicitly.
 - Tailwind v4 + `tailwind-merge` versions are coupled — pin them together.
 
-**Workspace npm scope:** `@toto` throughout this document (e.g. `@toto/design-system`). This is a placeholder inherited from the prior workspace name and is trivially changeable — pick the real scope before scaffolding.
+**Workspace npm scope:** `@dash` throughout this document (e.g. `@dash/design-system`). This is a placeholder inherited from the prior workspace name and is trivially changeable — pick the real scope before scaffolding.
 
 ---
 
 ## 4. Architectural Principles
 
 1. **No NgModules.** Everything is a standalone component/directive/pipe. App wiring is functional: `bootstrapApplication`, `provideRouter`, `provideHttpClient`.
-2. **The library is the deep module.** Each Nx lib publishes exactly **one** public entry point (`src/index.ts`). Consumers import only from the barrel (`@toto/design-system`), never a deep path (`@toto/design-system/src/lib/atoms/...`). Deep imports are lint errors.
+2. **The library is the deep module.** Each Nx lib publishes exactly **one** public entry point (`src/index.ts`). Consumers import only from the barrel (`@dash/design-system`), never a deep path (`@dash/design-system/src/lib/atoms/...`). Deep imports are lint errors.
 3. **Narrow surface, deep interior.** Export the minimum: the component class and the *public* variant/size **types**. Keep implementation details private — `*.variants.ts` (`tv()` configs), private sub-components, internal helpers, directives, pipes.
 4. **Dependencies flow one way.** Enforced in two dimensions: across libraries by Nx tags (`type:*` layering) and within the design system by ESLint import rules (atomic direction).
 5. **Presentational vs. routed.** The design system is 100% presentational and data-agnostic (atoms → templates). Anything that injects services, holds state, or is routed lives in a **feature** lib, not the design system.
@@ -65,7 +65,7 @@ A library exposes a single narrow public API (one `index.ts` barrel) and hides a
 ## 5. Workspace Layout
 
 ```
-@toto workspace/
+@dash workspace/
 ├─ nx.json                          # packageManager: bun; plugins; target defaults
 ├─ package.json · bun.lock
 ├─ tsconfig.base.json               # one path alias per lib barrel
@@ -73,14 +73,14 @@ A library exposes a single narrow public API (one `index.ts` barrel) and hides a
 ├─ eslint.config.mjs                # flat config + enforce-module-boundaries
 │
 ├─ apps/
-│  └─ shell/                        # thin routed host  (type:app, scope:shell)
+│  └─ dash/                        # thin routed host  (type:app, scope:dash)
 │     ├─ project.json
 │     ├─ tsconfig.app.json · tsconfig.spec.json
 │     ├─ index.html
 │     └─ src/
 │        ├─ main.ts                 # bootstrapApplication(App, appConfig)
 │        ├─ styles.css              # @import "tailwindcss"; tokens; @source libs
-│        ├─ test-setup.ts           # re-exports @toto/shared/test-setup
+│        ├─ test-setup.ts           # re-exports @dash/shared/test-setup
 │        └─ app/
 │           ├─ app.ts               # standalone root <App>
 │           ├─ app.html
@@ -130,7 +130,7 @@ A library exposes a single narrow public API (one `index.ts` barrel) and hides a
 
 ## 6. Design System Structure
 
-The design system is a **single Nx library** (`libs/design-system`, `@toto/design-system`), with atomic levels as **internal folders** rather than separate libs. Rationale: a lib-per-level split (`ui-atoms`, `ui-molecules`, …) produces five *shallow* modules whose interfaces are near-pure pass-through re-exports — the exact anti-pattern deep-module design warns against. One lib with folder-per-level is a single deep module: broad internals, one small stable API.
+The design system is a **single Nx library** (`libs/design-system`, `@dash/design-system`), with atomic levels as **internal folders** rather than separate libs. Rationale: a lib-per-level split (`ui-atoms`, `ui-molecules`, …) produces five *shallow* modules whose interfaces are near-pure pass-through re-exports — the exact anti-pattern deep-module design warns against. One lib with folder-per-level is a single deep module: broad internals, one small stable API.
 
 **Public API policy** — `libs/design-system/src/index.ts` re-exports a curated set only:
 
@@ -166,16 +166,16 @@ export { ShellLayoutComponent } from './lib/templates/shell-layout/shell-layout'
 | **Template** | A **page skeleton** with content slots and **no real data**. | `design-system/templates/` | `ShellLayoutComponent` (`<ng-content select="[header]">`, `[nav]`, `[content]`) |
 | **Page** | A **template instance** wired to real data + routing. | `home/feature-shell/pages/` | `HomePageComponent` (routed) |
 
-**Why templates and pages are split.** A template is presentational and data-agnostic → it belongs with the other UI primitives (`type:ui`). A page injects services and is routed → that's a *feature* concern; placing it in the design system would drag data-access/routing dependencies into the UI layer and violate the boundary rules (§9). Pages are lazy-loaded standalone components in feature libs; the shell app wires them via routes.
+**Why templates and pages are split.** A template is presentational and data-agnostic → it belongs with the other UI primitives (`type:ui`). A page injects services and is routed → that's a *feature* concern; placing it in the design system would drag data-access/routing dependencies into the UI layer and violate the boundary rules (§9). Pages are lazy-loaded standalone components in feature libs; the dash app wires them via routes.
 
 ---
 
 ## 8. Shell Application
 
-`apps/shell` is a **thin host**. It owns app-level providers and the route table, and delegates everything else to libraries.
+`apps/dash` is a **thin host**. It owns app-level providers and the route table, and delegates everything else to libraries.
 
 ```ts
-// apps/shell/src/main.ts
+// apps/dash/src/main.ts
 import { bootstrapApplication } from '@angular/platform-browser';
 import { App } from './app/app';
 import { appConfig } from './app/app.config';
@@ -183,7 +183,7 @@ bootstrapApplication(App, appConfig);
 ```
 
 ```ts
-// apps/shell/src/app/app.config.ts
+// apps/dash/src/app/app.config.ts
 import { ApplicationConfig, provideZonelessChangeDetection } from '@angular/core';
 import { provideRouter, withComponentInputBinding } from '@angular/router';
 import { provideHttpClient, withFetch } from '@angular/common/http';
@@ -199,10 +199,10 @@ export const appConfig: ApplicationConfig = {
 ```
 
 ```ts
-// apps/shell/src/app/app.routes.ts — lazy feature routes
+// apps/dash/src/app/app.routes.ts — lazy feature routes
 import { Routes } from '@angular/router';
 export const routes: Routes = [
-  { path: '', loadChildren: () => import('@toto/home/feature-shell').then(m => m.HOME_ROUTES) },
+  { path: '', loadChildren: () => import('@dash/home/feature-shell').then(m => m.HOME_ROUTES) },
 ];
 ```
 
@@ -214,7 +214,7 @@ Two-dimensional tagging: **`type`** (architectural layer) and **`scope`** (domai
 
 | Project | tags |
 |---|---|
-| `apps/shell` | `type:app`, `scope:shell` |
+| `apps/dash` | `type:app`, `scope:dash` |
 | `libs/design-system` | `type:ui`, `scope:shared` |
 | `libs/shared/ui-styles` | `type:util`, `scope:shared` |
 | `libs/shared/util-types` | `type:util`, `scope:shared` |
@@ -233,7 +233,7 @@ Two-dimensional tagging: **`type`** (architectural layer) and **`scope`** (domai
     { sourceTag: 'type:data-access', onlyDependOnLibsWithTags: ['type:data-access','type:util'] },
     { sourceTag: 'type:util',        onlyDependOnLibsWithTags: ['type:util'] },
     { sourceTag: 'scope:home',       onlyDependOnLibsWithTags: ['scope:home','scope:shared'] },
-    { sourceTag: 'scope:shell',      onlyDependOnLibsWithTags: ['scope:shell','scope:home','scope:shared'] },
+    { sourceTag: 'scope:dash',      onlyDependOnLibsWithTags: ['scope:dash','scope:home','scope:shared'] },
     { sourceTag: 'scope:shared',     onlyDependOnLibsWithTags: ['scope:shared'] },
   ],
 }]
@@ -272,7 +272,7 @@ Tailwind v4 is **CSS-first** (no `tailwind.config.js`). With the Angular applica
 }
 ```
 
-**App entry** — `apps/shell/src/styles.css`. Because libraries live outside the app root, `@source` directives tell Tailwind v4 where to scan for class names (v4's replacement for the `content` array — this is the #1 Nx + Tailwind-v4 gotcha):
+**App entry** — `apps/dash/src/styles.css`. Because libraries live outside the app root, `@source` directives tell Tailwind v4 where to scan for class names (v4's replacement for the `content` array — this is the #1 Nx + Tailwind-v4 gotcha):
 ```css
 @import "tailwindcss";
 @import "../../libs/design-system/src/styles/tokens.css";
@@ -348,9 +348,9 @@ Unit tests run on **Vitest** (Vitest 4 + jsdom, no Karma).
   "executor": "@angular/build:unit-test",
   "options": {
     "runner": "vitest",
-    "buildTarget": "shell:build",
-    "tsConfig": "apps/shell/tsconfig.spec.json",
-    "setupFiles": ["apps/shell/src/test-setup.ts"]
+    "buildTarget": "dash:build",
+    "tsConfig": "apps/dash/tsconfig.spec.json",
+    "setupFiles": ["apps/dash/src/test-setup.ts"]
   }
 }
 ```
@@ -390,14 +390,14 @@ getTestBed().initTestEnvironment(BrowserTestingModule, platformBrowserTesting())
 
 ## 14. Milestones / Definition of Done
 
-1. **Workspace bootstrapped** — `create-nx-workspace --packageManager bun`, Angular preset, `shell` app builds & serves.
+1. **Workspace bootstrapped** — `create-nx-workspace --packageManager bun`, Angular preset, `dash` app builds & serves.
 2. **Libraries generated** — `design-system`, `shared/ui-styles`, `shared/util-types`, `shared/test-setup`, `home/feature-shell`; barrels + path aliases wired.
 3. **Styling live** — Tailwind v4 via `@tailwindcss/postcss`, tokens + `@source` scanning working; a `ds-button` renders themed classes in the browser.
 4. **Atomic vertical slice** — Button (atom) → FormField (molecule) → AppHeader (organism) → ShellLayout (template) → HomePage (page, routed & lazy-loaded).
 5. **Boundaries enforced** — tags set; `nx lint` fails on an intentional cross-boundary import and on a deep import; atomic upward-import is blocked.
 6. **Tests green** — `bun nx run-many -t test` passes on Vitest for every project.
 
-**Done =** all six milestones met, `nx graph` shows the intended one-way dependency arrows, and the slice renders in the shell app.
+**Done =** all six milestones met, `nx graph` shows the intended one-way dependency arrows, and the slice renders in the dash app.
 
 ---
 
@@ -418,23 +418,23 @@ getTestBed().initTestEnvironment(BrowserTestingModule, platformBrowserTesting())
 - **`data-access` layer** — HTTP + signal-store state libs (`type:data-access`) between feature and util, with `provideHttpClient` interceptors.
 - **More domains** — additional `scope:<domain>` feature libs following the `home/feature-shell` pattern.
 - **Per-level DS split** — promote `atoms`/`molecules`/… to their own libs *only* if independent release cadence, ownership, or caching wins justify it.
-- **Publishing** — turn `design-system` into a buildable/publishable lib (`@toto/design-system` to a registry) if it needs to be consumed outside this workspace.
+- **Publishing** — turn `design-system` into a buildable/publishable lib (`@dash/design-system` to a registry) if it needs to be consumed outside this workspace.
 - **Beyond unit tests** — component/interaction tests, e2e (Playwright), visual regression, CI pipeline, SSR/hydration.
 
 ---
 
 ## 17. As-Built Notes (implementation)
 
-The workspace was scaffolded from this spec (`create-nx-workspace@23`, integrated layout with `project.json` + `tsconfig.base.json` path aliases). A few tooling-driven deviations from the spec above, all verified working (`nx run-many -t lint test` green, `nx build shell` green):
+The workspace was scaffolded from this spec (`create-nx-workspace@23`, integrated layout with `project.json` + `tsconfig.base.json` path aliases). A few tooling-driven deviations from the spec above, all verified working (`nx run-many -t lint test` green, `nx build dash` green):
 
-- **Vitest runner.** The native `@angular/build:unit-test` (`vitest-angular`) runner **requires libraries to be buildable** (ng-packagr), which is inappropriate for feature libs. So tests use the **AnalogJS Vitest** path instead: `@nx/vitest:test` executor + a per-project `vite.config.mts` (`@analogjs/vite-plugin-angular`). Still **Vitest 4 + jsdom** — only the bootstrap differs from §12's snippet. The app (`shell`) is wired the same way (the app generator adds no test target, so it was added manually).
+- **Vitest runner.** The native `@angular/build:unit-test` (`vitest-angular`) runner **requires libraries to be buildable** (ng-packagr), which is inappropriate for feature libs. So tests use the **AnalogJS Vitest** path instead: `@nx/vitest:test` executor + a per-project `vite.config.mts` (`@analogjs/vite-plugin-angular`). Still **Vitest 4 + jsdom** — only the bootstrap differs from §12's snippet. The app (`dash`) is wired the same way (the app generator adds no test target, so it was added manually).
 - **Test setup is per-project.** AnalogJS generates `src/test-setup.ts` per project (`setupTestBed()` from `@analogjs/vitest-angular`), so the separate `shared/test-setup` lib in §5 was **not** created — it would be redundant.
-- **Import paths are flat.** npm scopes cannot nest, so aliases are `@toto/design-system`, `@toto/ui-styles`, `@toto/util-types`, `@toto/home-feature-shell` (directories still use the `libs/shared/…`, `libs/home/…` grouping).
+- **Import paths are flat.** npm scopes cannot nest, so aliases are `@dash/design-system`, `@dash/ui-styles`, `@dash/util-types`, `@dash/home-feature-shell` (directories still use the `libs/shared/…`, `libs/home/…` grouping).
 - **An `Input` atom was added** (beyond §6's example list) so the `FormField` molecule genuinely composes an atom rather than a raw `<input>`.
 - **Atoms use attribute selectors** (`button[ds-button]`, `input[ds-input]`) to host native elements; the design-system `component-selector` lint rule allows `['element','attribute']` with the `ds` prefix.
 - **Nx v24 deprecations (non-blocking).** `@nx/vitest:test`, `@nx/eslint:lint`, and the `nxViteTsPaths`/`nxCopyAssetsPlugin` vite plugins log deprecation warnings on Nx 23 and will need `nx g …:convert-to-inferred` migrations before upgrading to Nx 24.
 
 ### Verified end-to-end
 - `nx run-many -t lint test` → 3 projects, **10 tests pass**, 0 lint errors.
-- `nx build shell` → succeeds; `home-feature-shell` emitted as a **lazy chunk**; Tailwind `@source` scanning confirmed (lib-only classes like `bg-brand-500`, `rounded-btn`, `min-h-dvh` present in the compiled CSS).
+- `nx build dash` → succeeds; `home-feature-shell` emitted as a **lazy chunk**; Tailwind `@source` scanning confirmed (lib-only classes like `bg-brand-500`, `rounded-btn`, `min-h-dvh` present in the compiled CSS).
 - Module boundaries confirmed by probe: an atom→molecule import and a `type:ui`→`type:feature` import both **fail lint** as designed.

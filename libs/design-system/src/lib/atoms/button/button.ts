@@ -4,7 +4,7 @@ import {
   computed,
   input,
 } from '@angular/core';
-import { cn } from '@toto/ui-styles';
+import { cn } from '@dash/ui-styles';
 import { button, type ButtonIntent, type ButtonSize } from './button.variants';
 
 /**

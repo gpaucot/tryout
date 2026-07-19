@@ -3,7 +3,7 @@
  *
  * Exported: component classes + their public variant/size TYPES.
  * NOT exported: `*.variants.ts` (tv configs), templates markup, internals.
- * Consumers import from `@toto/design-system` only — never a deep path.
+ * Consumers import from `@dash/design-system` only — never a deep path.
  */
 
 // atoms

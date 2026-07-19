@@ -5,10 +5,10 @@ import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
 
 export default defineConfig(() => ({
   root: __dirname,
-  cacheDir: '../../node_modules/.vite/apps/shell',
+  cacheDir: '../../node_modules/.vite/apps/dash',
   plugins: [angular(), nxViteTsPaths()],
   test: {
-    name: 'shell',
+    name: 'dash',
     watch: false,
     globals: true,
     environment: 'jsdom',
@@ -16,7 +16,7 @@ export default defineConfig(() => ({
     setupFiles: ['src/test-setup.ts'],
     reporters: ['default'],
     coverage: {
-      reportsDirectory: '../../coverage/apps/shell',
+      reportsDirectory: '../../coverage/apps/dash',
       provider: 'v8' as const,
     },
   },

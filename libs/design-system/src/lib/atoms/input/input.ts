@@ -4,7 +4,7 @@ import {
   computed,
   input as prop,
 } from '@angular/core';
-import { cn } from '@toto/ui-styles';
+import { cn } from '@dash/ui-styles';
 import { input, type InputSize } from './input.variants';
 
 /**

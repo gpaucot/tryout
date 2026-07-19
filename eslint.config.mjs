@@ -46,8 +46,8 @@ export default [
             },
             // Domain isolation: a scope may only reach its own domain + shared.
             {
-              sourceTag: 'scope:shell',
-              onlyDependOnLibsWithTags: ['scope:shell', 'scope:home', 'scope:shared'],
+              sourceTag: 'scope:dash',
+              onlyDependOnLibsWithTags: ['scope:dash', 'scope:home', 'scope:shared'],
             },
             {
               sourceTag: 'scope:home',

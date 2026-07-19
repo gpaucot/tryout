@@ -15,10 +15,10 @@
     "skipDefaultLibCheck": true,
     "strict": false,
     "paths": {
-      "@toto/design-system": ["./libs/design-system/src/index.ts"],
-      "@toto/home-feature-shell": ["./libs/home/feature-shell/src/index.ts"],
-      "@toto/ui-styles": ["./libs/shared/ui-styles/src/index.ts"],
-      "@toto/util-types": ["./libs/shared/util-types/src/index.ts"]
+      "@dash/design-system": ["./libs/design-system/src/index.ts"],
+      "@dash/home-feature-shell": ["./libs/home/feature-shell/src/index.ts"],
+      "@dash/ui-styles": ["./libs/shared/ui-styles/src/index.ts"],
+      "@dash/util-types": ["./libs/shared/util-types/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

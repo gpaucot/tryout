@@ -4,6 +4,6 @@ export const appRoutes: Routes = [
   {
     path: '',
     loadChildren: () =>
-      import('@toto/home-feature-shell').then((m) => m.HOME_ROUTES),
+      import('@dash/home-feature-shell').then((m) => m.HOME_ROUTES),
   },
 ];

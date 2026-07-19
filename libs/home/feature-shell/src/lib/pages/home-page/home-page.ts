@@ -4,7 +4,7 @@ import {
   Button,
   FormField,
   ShellLayout,
-} from '@toto/design-system';
+} from '@dash/design-system';
 
 /**
  * HomePage — page (atomic top level).
