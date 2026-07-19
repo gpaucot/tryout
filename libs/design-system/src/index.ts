@@ -11,6 +11,11 @@ export { Button } from './lib/atoms/button/button';
 export type { ButtonIntent, ButtonSize } from './lib/atoms/button/button.variants';
 export { Input } from './lib/atoms/input/input';
 export type { InputSize } from './lib/atoms/input/input.variants';
+export { DescriptionList } from './lib/atoms/description-list/description-list';
+export type {
+  DescriptionListOrientation,
+  DescriptionListSize,
+} from './lib/atoms/description-list/description-list.variants';
 
 // molecules
 export { FormField } from './lib/molecules/form-field/form-field';

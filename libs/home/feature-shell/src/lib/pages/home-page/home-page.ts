@@ -3,12 +3,13 @@ import {
   AppHeader,
   Button,
   CheckboxGroup,
+  DescriptionList,
   FormField,
   RadioGroup,
   Select,
   ShellLayout,
 } from '@dash/design-system';
-import type { SelectOptions } from '@dash/util-types';
+import type { DescriptionItems, SelectOptions } from '@dash/util-types';
 
 /**
  * HomePage — page (atomic top level).
@@ -27,6 +28,7 @@ import type { SelectOptions } from '@dash/util-types';
     Select,
     RadioGroup,
     CheckboxGroup,
+    DescriptionList,
   ],
   templateUrl: './home-page.html',
 })
@@ -50,6 +52,12 @@ export class HomePage {
     { value: 'free', label: 'Free' },
     { value: 'pro', label: 'Pro' },
     { value: 'enterprise', label: 'Enterprise' },
+  ];
+
+  protected readonly details: DescriptionItems = [
+    { term: 'Status', description: 'Active' },
+    { term: 'Owner', description: 'gpaucot' },
+    { term: 'Region', description: 'eu-west-1' },
   ];
 
   protected onAction(): void {

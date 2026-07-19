@@ -25,3 +25,12 @@ export interface SelectOption<T> {
 
 /** A collection of choices. */
 export type SelectOptions<T> = readonly SelectOption<T>[];
+
+/** A single term/description pair in a description list. */
+export interface DescriptionItem {
+  readonly term: string;
+  readonly description: string;
+}
+
+/** A collection of term/description pairs. */
+export type DescriptionItems = readonly DescriptionItem[];
