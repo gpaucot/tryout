@@ -1,7 +1,8 @@
-import { Component, signal } from '@angular/core';
+import { Component, type Provider, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import type { DescriptionItems } from '@dash/util-types';
 import { DescriptionList } from './description-list';
+import { provideDescriptionValueFormatters } from './description-list.model';
 import type {
   DescriptionListOrientation,
   DescriptionListSize,
@@ -17,59 +18,136 @@ import type {
   ></dl>`,
 })
 class Host {
-  items = signal<DescriptionItems>([
-    { term: 'Status', description: 'Active' },
-    { term: 'Owner', description: 'gpaucot' },
-  ]);
+  items = signal<DescriptionItems>([]);
   orientation = signal<DescriptionListOrientation>('stacked');
   size = signal<DescriptionListSize>('md');
 }
 
-function render() {
+function render(items: DescriptionItems, providers: Provider[] = []) {
+  TestBed.configureTestingModule({ providers });
   const fixture = TestBed.createComponent(Host);
+  fixture.componentInstance.items.set(items);
   fixture.detectChanges();
   const dl = fixture.nativeElement.querySelector('dl') as HTMLDListElement;
   return { fixture, dl };
 }
 
+function rowText(dl: HTMLDListElement, index = 0) {
+  return dl.querySelectorAll('dd')[index]?.textContent?.trim();
+}
+
 describe('DescriptionList', () => {
-  it('renders a term/description pair per item', () => {
-    const { dl } = render();
+  it('renders a term/value pair per item (string default)', () => {
+    const { dl } = render([
+      { term: 'Owner', value: 'gpaucot' },
+      { term: 'Team', value: 'platform' },
+    ]);
     const terms = Array.from(dl.querySelectorAll('dt')).map((t) =>
       t.textContent?.trim(),
     );
-    const descriptions = Array.from(dl.querySelectorAll('dd')).map((d) =>
-      d.textContent?.trim(),
-    );
-    expect(terms).toEqual(['Status', 'Owner']);
-    expect(descriptions).toEqual(['Active', 'gpaucot']);
+    expect(terms).toEqual(['Owner', 'Team']);
+    expect(rowText(dl, 0)).toBe('gpaucot');
   });
 
-  it('applies the default stacked/md variant classes', () => {
-    const { dl } = render();
+  it('applies the default stacked/md classes and switches to inline/lg', () => {
+    const { fixture, dl } = render([{ term: 'A', value: '1' }]);
     expect(dl.className).toContain('flex-col');
     expect(dl.className).toContain('text-sm');
-    const row = dl.querySelector('div') as HTMLElement;
-    expect(row.className).toContain('flex-col');
-  });
+    expect((dl.querySelector('div') as HTMLElement).className).toContain(
+      'flex-col',
+    );
 
-  it('switches to an inline grid layout and reflects size', () => {
-    const { fixture, dl } = render();
     fixture.componentInstance.orientation.set('inline');
     fixture.componentInstance.size.set('lg');
     fixture.detectChanges();
     expect(dl.className).toContain('text-base');
-    const row = dl.querySelector('div') as HTMLElement;
-    expect(row.className).toContain('grid');
+    expect((dl.querySelector('div') as HTMLElement).className).toContain('grid');
   });
 
-  it('reacts to item changes', () => {
-    const { fixture, dl } = render();
-    fixture.componentInstance.items.set([
-      { term: 'Plan', description: 'Pro' },
+  it('formats numbers and currencies via Intl', () => {
+    const { dl } = render([
+      { term: 'Seats', value: 12000, type: 'number' },
+      {
+        term: 'Cost',
+        value: 4200,
+        type: 'currency',
+        options: { currency: 'USD', locale: 'en-US' },
+      },
     ]);
-    fixture.detectChanges();
-    expect(dl.querySelectorAll('dt').length).toBe(1);
-    expect(dl.querySelector('dt')?.textContent?.trim()).toBe('Plan');
+    expect(rowText(dl, 0)).toBe('12,000');
+    expect(rowText(dl, 1)).toContain('4,200');
+    expect(rowText(dl, 1)).toContain('$');
+  });
+
+  it('formats booleans with overridable labels', () => {
+    const { dl } = render([
+      { term: 'Verified', value: true, type: 'boolean' },
+      {
+        term: 'Active',
+        value: false,
+        type: 'boolean',
+        options: { trueLabel: 'On', falseLabel: 'Off' },
+      },
+    ]);
+    expect(rowText(dl, 0)).toBe('Yes');
+    expect(rowText(dl, 1)).toBe('Off');
+  });
+
+  it('renders url, email and phone as links', () => {
+    const { dl } = render([
+      { term: 'Site', value: 'https://nx.dev', type: 'url', options: { label: 'nx.dev' } },
+      { term: 'Email', value: 'a@b.com', type: 'email' },
+      { term: 'Phone', value: '+1 (555) 010-1234', type: 'phone' },
+    ]);
+    const links = Array.from(dl.querySelectorAll('a')) as HTMLAnchorElement[];
+    expect(links[0].getAttribute('href')).toBe('https://nx.dev');
+    expect(links[0].textContent?.trim()).toBe('nx.dev');
+    expect(links[0].getAttribute('target')).toBe('_blank');
+    expect(links[1].getAttribute('href')).toBe('mailto:a@b.com');
+    expect(links[2].getAttribute('href')).toBe('tel:+15550101234');
+  });
+
+  it('renders arrays as a list, formatting each element by itemType', () => {
+    const { dl } = render([
+      {
+        term: 'Prices',
+        value: [1000, 2500],
+        type: 'array',
+        options: { itemType: 'currency', itemOptions: { currency: 'USD', locale: 'en-US' } },
+      },
+    ]);
+    const chips = Array.from(dl.querySelectorAll('li')).map((li) =>
+      li.textContent?.trim(),
+    );
+    expect(chips.length).toBe(2);
+    expect(chips[0]).toContain('1,000');
+    expect(chips[1]).toContain('2,500');
+  });
+
+  it('renders a dash for null/undefined values', () => {
+    const { dl } = render([{ term: 'Notes', value: null }]);
+    expect(rowText(dl, 0)).toBe('—');
+  });
+
+  it('is extensible: a provided formatter adds a new type (Open/Closed)', () => {
+    const { dl } = render(
+      [{ term: 'Shout', value: 'hi', type: 'shout' }],
+      provideDescriptionValueFormatters({
+        type: 'shout',
+        format: (v) => ({ display: 'text', text: `${String(v).toUpperCase()}!` }),
+      }),
+    );
+    expect(rowText(dl, 0)).toBe('HI!');
+  });
+
+  it('lets a provided formatter override a built-in type', () => {
+    const { dl } = render(
+      [{ term: 'Name', value: 'x', type: 'string' }],
+      provideDescriptionValueFormatters({
+        type: 'string',
+        format: () => ({ display: 'text', text: 'REDACTED' }),
+      }),
+    );
+    expect(rowText(dl, 0)).toBe('REDACTED');
   });
 });

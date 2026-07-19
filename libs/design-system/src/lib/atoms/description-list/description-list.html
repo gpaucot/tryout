@@ -1,6 +1,40 @@
-@for (item of items(); track $index) {
+@for (row of rows(); track $index) {
   <div [class]="rowClasses()">
-    <dt [class]="termClasses">{{ item.term }}</dt>
-    <dd [class]="descriptionClasses">{{ item.description }}</dd>
+    <dt [class]="termClasses">{{ row.term }}</dt>
+    <dd [class]="descriptionClasses">
+      <ng-container
+        [ngTemplateOutlet]="valueTpl"
+        [ngTemplateOutletContext]="{ $implicit: row.rendering }"
+      ></ng-container>
+    </dd>
   </div>
 }
+
+<ng-template #valueTpl let-r>
+  @switch (r.display) {
+    @case ('link') {
+      <a
+        [attr.href]="r.href"
+        [attr.target]="r.external ? '_blank' : null"
+        [attr.rel]="r.external ? 'noopener noreferrer' : null"
+        class="text-brand-700 underline underline-offset-2 hover:text-brand-500"
+        >{{ r.label }}</a
+      >
+    }
+    @case ('list') {
+      <ul class="flex flex-wrap gap-1.5">
+        @for (child of r.items; track $index) {
+          <li class="rounded bg-surface-muted px-1.5 py-0.5">
+            <ng-container
+              [ngTemplateOutlet]="valueTpl"
+              [ngTemplateOutletContext]="{ $implicit: child }"
+            ></ng-container>
+          </li>
+        }
+      </ul>
+    }
+    @default {
+      <span>{{ r.text }}</span>
+    }
+  }
+</ng-template>

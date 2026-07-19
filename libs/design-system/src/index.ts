@@ -16,6 +16,15 @@ export type {
   DescriptionListOrientation,
   DescriptionListSize,
 } from './lib/atoms/description-list/description-list.variants';
+export {
+  DESCRIPTION_VALUE_FORMATTERS,
+  provideDescriptionValueFormatters,
+} from './lib/atoms/description-list/description-list.model';
+export type {
+  DescriptionValueFormatter,
+  DescriptionFormatContext,
+  DescriptionRendering,
+} from './lib/atoms/description-list/description-list.model';
 
 // molecules
 export { FormField } from './lib/molecules/form-field/form-field';

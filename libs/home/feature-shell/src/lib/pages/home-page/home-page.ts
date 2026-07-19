@@ -55,9 +55,24 @@ export class HomePage {
   ];
 
   protected readonly details: DescriptionItems = [
-    { term: 'Status', description: 'Active' },
-    { term: 'Owner', description: 'gpaucot' },
-    { term: 'Region', description: 'eu-west-1' },
+    {
+      term: 'Status',
+      value: true,
+      type: 'boolean',
+      options: { trueLabel: 'Active', falseLabel: 'Inactive' },
+    },
+    { term: 'Owner', value: 'gpaucot' },
+    { term: 'Seats', value: 12, type: 'number' },
+    {
+      term: 'Monthly cost',
+      value: 4200,
+      type: 'currency',
+      options: { currency: 'EUR', locale: 'en-GB' },
+    },
+    { term: 'Support', value: 'support@example.com', type: 'email' },
+    { term: 'Phone', value: '+1 (555) 010-1234', type: 'phone' },
+    { term: 'Docs', value: 'https://nx.dev', type: 'url', options: { label: 'nx.dev' } },
+    { term: 'Regions', value: ['eu-west-1', 'us-east-1'], type: 'array' },
   ];
 
   protected onAction(): void {

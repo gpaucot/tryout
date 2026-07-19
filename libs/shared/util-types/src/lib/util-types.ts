@@ -26,11 +26,22 @@ export interface SelectOption<T> {
 /** A collection of choices. */
 export type SelectOptions<T> = readonly SelectOption<T>[];
 
-/** A single term/description pair in a description list. */
+/**
+ * A single term/value pair in a description list.
+ *
+ * `value` is intentionally `unknown`: how it renders is decided by the
+ * formatter selected via `type` (e.g. 'currency', 'email', 'array'). `type`
+ * defaults to 'string' and is open-ended — register a formatter for any custom
+ * type without changing the component.
+ */
 export interface DescriptionItem {
   readonly term: string;
-  readonly description: string;
+  readonly value: unknown;
+  /** Formatter discriminator. Defaults to 'string'. */
+  readonly type?: string;
+  /** Formatter-specific options (currency code, locale, boolean labels, …). */
+  readonly options?: Readonly<Record<string, unknown>>;
 }
 
-/** A collection of term/description pairs. */
+/** A collection of term/value pairs. */
 export type DescriptionItems = readonly DescriptionItem[];
