@@ -1,0 +1,63 @@
+<button
+  #trigger
+  type="button"
+  role="combobox"
+  aria-haspopup="listbox"
+  [attr.aria-expanded]="open()"
+  [attr.aria-controls]="open() ? listboxId : null"
+  [attr.aria-invalid]="invalid() || null"
+  [disabled]="disabled()"
+  [class]="triggerClasses()"
+  (click)="toggle()"
+  (keydown)="onKeydown($event)"
+>
+  <span [class]="selectedLabel() ? 'truncate' : 'truncate text-current/50'">
+    {{ selectedLabel() || placeholder() }}
+  </span>
+  <svg
+    class="size-4 shrink-0 opacity-60"
+    viewBox="0 0 20 20"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.5"
+    aria-hidden="true"
+  >
+    <path d="M6 8l4 4 4-4" stroke-linecap="round" stroke-linejoin="round" />
+  </svg>
+</button>
+
+@if (open()) {
+  <div [id]="listboxId" role="listbox" [class]="listboxClasses()">
+    @if (filterable()) {
+      <input
+        ds-input
+        class="mb-1"
+        [size]="size()"
+        [value]="query()"
+        [placeholder]="searchPlaceholder()"
+        (input)="onSearch($any($event.target).value)"
+        (keydown)="onKeydown($event)"
+        role="searchbox"
+        aria-label="Filter options"
+      />
+    }
+
+    @for (opt of filtered(); track opt.value; let i = $index) {
+      <button
+        type="button"
+        role="option"
+        [attr.aria-selected]="isSelected(opt.value)"
+        [attr.aria-disabled]="opt.disabled || null"
+        [class]="optionClasses(opt, i)"
+        (click)="select(opt)"
+        (mouseenter)="activeIndex.set(i)"
+      >
+        {{ opt.label }}
+      </button>
+    }
+
+    @if (filtered().length === 0) {
+      <p class="px-2 py-1.5 text-sm text-current/60">No matches</p>
+    }
+  </div>
+}

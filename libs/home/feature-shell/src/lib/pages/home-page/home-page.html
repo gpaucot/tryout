@@ -27,5 +27,31 @@
         <span class="text-sm text-current/60">clicks: {{ clicks() }}</span>
       </div>
     </div>
+
+    <div class="grid gap-6 rounded-card border border-border bg-surface p-6 sm:grid-cols-3">
+      <div class="flex flex-col gap-2">
+        <span class="text-sm font-medium">Select (filterable)</span>
+        <ds-select
+          [options]="fruits"
+          [(value)]="fruit"
+          [filterable]="true"
+          placeholder="Pick a fruit"
+        />
+        <span class="text-sm text-current/60">value: {{ fruit() ?? '—' }}</span>
+      </div>
+
+      <ds-radio-group
+        legend="Plan"
+        [options]="plans"
+        [(value)]="plan"
+      />
+
+      <ds-checkbox-group
+        legend="Toppings (filterable)"
+        [options]="fruits"
+        [(value)]="toppings"
+        [filterable]="true"
+      />
+    </div>
   </section>
 </ds-shell-layout>

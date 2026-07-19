@@ -14,6 +14,12 @@ export type { InputSize } from './lib/atoms/input/input.variants';
 
 // molecules
 export { FormField } from './lib/molecules/form-field/form-field';
+export { Select } from './lib/molecules/select/select';
+export type { SelectSize } from './lib/molecules/select/select.variants';
+export { RadioGroup } from './lib/molecules/radio-group/radio-group';
+export type { RadioGroupSize } from './lib/molecules/radio-group/radio-group.variants';
+export { CheckboxGroup } from './lib/molecules/checkbox-group/checkbox-group';
+export type { CheckboxGroupSize } from './lib/molecules/checkbox-group/checkbox-group.variants';
 
 // organisms
 export { AppHeader } from './lib/organisms/app-header/app-header';
