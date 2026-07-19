@@ -17,14 +17,13 @@ export type {
   DescriptionListSize,
 } from './lib/atoms/description-list/description-list.variants';
 export {
-  DESCRIPTION_VALUE_FORMATTERS,
-  provideDescriptionValueFormatters,
-} from './lib/atoms/description-list/description-list.model';
+  DESCRIPTION_VALUE_PLUGINS,
+  provideDescriptionValuePlugins,
+} from './lib/atoms/description-list/description-list.plugin';
 export type {
-  DescriptionValueFormatter,
-  DescriptionFormatContext,
-  DescriptionRendering,
-} from './lib/atoms/description-list/description-list.model';
+  DescriptionValuePlugin,
+  DescriptionValueComponent,
+} from './lib/atoms/description-list/description-list.plugin';
 
 // molecules
 export { FormField } from './lib/molecules/form-field/form-field';

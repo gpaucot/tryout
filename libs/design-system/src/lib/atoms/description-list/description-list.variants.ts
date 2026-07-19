@@ -40,6 +40,14 @@ export const descriptionList = {
   term: tv({ base: 'font-medium text-current/60' }),
   /** The `<dd>` description. */
   description: tv({ base: 'text-current' }),
+  /** Shared anchor styling for link-shaped value plugins. */
+  link: tv({
+    base: 'text-brand-700 underline underline-offset-2 hover:text-brand-500',
+  }),
+  /** Wrapper for list-shaped value plugins (e.g. array). */
+  list: tv({ base: 'flex flex-wrap gap-1.5' }),
+  /** A single list item / chip. */
+  chip: tv({ base: 'rounded bg-surface-muted px-1.5 py-0.5' }),
 };
 
 export type DescriptionListSize = NonNullable<

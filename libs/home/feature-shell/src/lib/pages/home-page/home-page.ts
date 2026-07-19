@@ -5,11 +5,13 @@ import {
   CheckboxGroup,
   DescriptionList,
   FormField,
+  provideDescriptionValuePlugins,
   RadioGroup,
   Select,
   ShellLayout,
 } from '@dash/design-system';
 import type { DescriptionItems, SelectOptions } from '@dash/util-types';
+import { StatusBadgeValue } from './status-badge-value';
 
 /**
  * HomePage — page (atomic top level).
@@ -29,6 +31,11 @@ import type { DescriptionItems, SelectOptions } from '@dash/util-types';
     RadioGroup,
     CheckboxGroup,
     DescriptionList,
+  ],
+  providers: [
+    // Consumer extends the DescriptionList with a custom value type — no
+    // change to the design system.
+    provideDescriptionValuePlugins({ type: 'badge', component: StatusBadgeValue }),
   ],
   templateUrl: './home-page.html',
 })
@@ -73,6 +80,7 @@ export class HomePage {
     { term: 'Phone', value: '+1 (555) 010-1234', type: 'phone' },
     { term: 'Docs', value: 'https://nx.dev', type: 'url', options: { label: 'nx.dev' } },
     { term: 'Regions', value: ['eu-west-1', 'us-east-1'], type: 'array' },
+    { term: 'Tier', value: 'gold', type: 'badge' },
   ];
 
   protected onAction(): void {

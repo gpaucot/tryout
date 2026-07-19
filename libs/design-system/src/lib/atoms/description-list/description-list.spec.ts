@@ -1,8 +1,14 @@
-import { Component, type Provider, signal } from '@angular/core';
+import {
+  Component,
+  type Provider,
+  computed,
+  input,
+  signal,
+} from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import type { DescriptionItems } from '@dash/util-types';
 import { DescriptionList } from './description-list';
-import { provideDescriptionValueFormatters } from './description-list.model';
+import { provideDescriptionValuePlugins } from './description-list.plugin';
 import type {
   DescriptionListOrientation,
   DescriptionListSize,
@@ -21,6 +27,19 @@ class Host {
   items = signal<DescriptionItems>([]);
   orientation = signal<DescriptionListOrientation>('stacked');
   size = signal<DescriptionListSize>('md');
+}
+
+// A consumer-authored plugin component (the extension path).
+@Component({
+  selector: 'ds-dv-shout',
+  template: `{{ text() }}`,
+})
+class ShoutValue {
+  readonly value = input<unknown>(undefined);
+  readonly options = input<Readonly<Record<string, unknown>>>({});
+  protected readonly text = computed(
+    () => `${String(this.value()).toUpperCase()}!`,
+  );
 }
 
 function render(items: DescriptionItems, providers: Provider[] = []) {
@@ -64,7 +83,7 @@ describe('DescriptionList', () => {
     expect((dl.querySelector('div') as HTMLElement).className).toContain('grid');
   });
 
-  it('formats numbers and currencies via Intl', () => {
+  it('renders numbers and currencies via Intl plugins', () => {
     const { dl } = render([
       { term: 'Seats', value: 12000, type: 'number' },
       {
@@ -79,7 +98,7 @@ describe('DescriptionList', () => {
     expect(rowText(dl, 1)).toContain('$');
   });
 
-  it('formats booleans with overridable labels', () => {
+  it('renders booleans with overridable labels', () => {
     const { dl } = render([
       { term: 'Verified', value: true, type: 'boolean' },
       {
@@ -129,25 +148,19 @@ describe('DescriptionList', () => {
     expect(rowText(dl, 0)).toBe('—');
   });
 
-  it('is extensible: a provided formatter adds a new type (Open/Closed)', () => {
+  it('is extensible: a registered plugin adds a new type (Open/Closed)', () => {
     const { dl } = render(
       [{ term: 'Shout', value: 'hi', type: 'shout' }],
-      provideDescriptionValueFormatters({
-        type: 'shout',
-        format: (v) => ({ display: 'text', text: `${String(v).toUpperCase()}!` }),
-      }),
+      provideDescriptionValuePlugins({ type: 'shout', component: ShoutValue }),
     );
     expect(rowText(dl, 0)).toBe('HI!');
   });
 
-  it('lets a provided formatter override a built-in type', () => {
+  it('lets a registered plugin override a built-in type', () => {
     const { dl } = render(
       [{ term: 'Name', value: 'x', type: 'string' }],
-      provideDescriptionValueFormatters({
-        type: 'string',
-        format: () => ({ display: 'text', text: 'REDACTED' }),
-      }),
+      provideDescriptionValuePlugins({ type: 'string', component: ShoutValue }),
     );
-    expect(rowText(dl, 0)).toBe('REDACTED');
+    expect(rowText(dl, 0)).toBe('X!');
   });
 });
