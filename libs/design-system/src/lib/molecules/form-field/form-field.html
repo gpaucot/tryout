@@ -1,0 +1,17 @@
+<div class="flex flex-col gap-1.5">
+  <label [attr.for]="fieldId" class="text-sm font-medium text-current">
+    {{ label() }}
+  </label>
+
+  <input
+    ds-input
+    [id]="fieldId"
+    [placeholder]="placeholder()"
+    [invalid]="invalid()"
+    [attr.aria-describedby]="invalid() ? fieldId + '-error' : null"
+  />
+
+  @if (invalid()) {
+    <p [id]="fieldId + '-error'" class="text-sm text-danger-600">{{ error() }}</p>
+  }
+</div>

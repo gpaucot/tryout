@@ -1,0 +1,17 @@
+@import 'tailwindcss';
+
+/* Design tokens (@theme) — shipped by the design system, consumed app-wide. */
+@import '../../../libs/design-system/src/styles/tokens.css';
+
+/*
+ * Libraries live outside the app root, so Tailwind v4 must be told where to
+ * scan for class names (v4's replacement for the `content` array). Without
+ * these, classes used only in libs/ get purged from the build.
+ */
+@source '../../../libs/design-system/src';
+@source '../../../libs/home/feature-shell/src';
+
+html,
+body {
+  height: 100%;
+}

@@ -37,7 +37,7 @@ A library exposes a single narrow public API (one `index.ts` barrel) and hides a
 | Monorepo | Nx | **~23** | Bun as PM; inferred (crystal) targets. |
 | Package manager | **Bun** | current | `packageManager: "bun"` in `nx.json`; `bun.lock`. |
 | Build/serve | `@angular/build` | matches Angular | `:application`, `:dev-server` (esbuild/Vite). |
-| Unit tests | **Vitest** via `@angular/build:unit-test` | Vitest **^4** | `runner: "vitest"`, jsdom. Stable default in Angular 21. |
+| Unit tests | **Vitest** (AnalogJS runner, see §17) | Vitest **^4** | jsdom. `@nx/vitest:test` + `vite.config.mts`. |
 | Styling | **Tailwind CSS v4** | 4.x | CSS-first; `@tailwindcss/postcss`. |
 | Variants | **tailwind-variants** (`tv()`) | 3.x | Peer: `tailwind-merge` **>=3**. |
 | Lint/boundaries | ESLint flat config + `@nx/eslint-plugin` | matches Nx | `@nx/enforce-module-boundaries`. |
@@ -338,7 +338,9 @@ export const cn = extendTailwindMerge({ /* register custom token groups if neede
 
 ## 12. Testing Strategy
 
-Unit tests run on **Vitest** through Angular 21's native `@angular/build:unit-test` builder (no Karma, no separate `vitest.config.ts` unless advanced knobs are needed).
+> **As-built:** the design below describes the native `@angular/build:unit-test` builder. That runner requires buildable libs, so the actual implementation uses the AnalogJS Vitest path (`@nx/vitest:test` + `vite.config.mts`) instead — same Vitest 4 + jsdom. See **§17**.
+
+Unit tests run on **Vitest** (Vitest 4 + jsdom, no Karma).
 
 **Test target** (explicit form; prefer Nx inferred targets where possible):
 ```json
@@ -418,3 +420,21 @@ getTestBed().initTestEnvironment(BrowserTestingModule, platformBrowserTesting())
 - **Per-level DS split** — promote `atoms`/`molecules`/… to their own libs *only* if independent release cadence, ownership, or caching wins justify it.
 - **Publishing** — turn `design-system` into a buildable/publishable lib (`@toto/design-system` to a registry) if it needs to be consumed outside this workspace.
 - **Beyond unit tests** — component/interaction tests, e2e (Playwright), visual regression, CI pipeline, SSR/hydration.
+
+---
+
+## 17. As-Built Notes (implementation)
+
+The workspace was scaffolded from this spec (`create-nx-workspace@23`, integrated layout with `project.json` + `tsconfig.base.json` path aliases). A few tooling-driven deviations from the spec above, all verified working (`nx run-many -t lint test` green, `nx build shell` green):
+
+- **Vitest runner.** The native `@angular/build:unit-test` (`vitest-angular`) runner **requires libraries to be buildable** (ng-packagr), which is inappropriate for feature libs. So tests use the **AnalogJS Vitest** path instead: `@nx/vitest:test` executor + a per-project `vite.config.mts` (`@analogjs/vite-plugin-angular`). Still **Vitest 4 + jsdom** — only the bootstrap differs from §12's snippet. The app (`shell`) is wired the same way (the app generator adds no test target, so it was added manually).
+- **Test setup is per-project.** AnalogJS generates `src/test-setup.ts` per project (`setupTestBed()` from `@analogjs/vitest-angular`), so the separate `shared/test-setup` lib in §5 was **not** created — it would be redundant.
+- **Import paths are flat.** npm scopes cannot nest, so aliases are `@toto/design-system`, `@toto/ui-styles`, `@toto/util-types`, `@toto/home-feature-shell` (directories still use the `libs/shared/…`, `libs/home/…` grouping).
+- **An `Input` atom was added** (beyond §6's example list) so the `FormField` molecule genuinely composes an atom rather than a raw `<input>`.
+- **Atoms use attribute selectors** (`button[ds-button]`, `input[ds-input]`) to host native elements; the design-system `component-selector` lint rule allows `['element','attribute']` with the `ds` prefix.
+- **Nx v24 deprecations (non-blocking).** `@nx/vitest:test`, `@nx/eslint:lint`, and the `nxViteTsPaths`/`nxCopyAssetsPlugin` vite plugins log deprecation warnings on Nx 23 and will need `nx g …:convert-to-inferred` migrations before upgrading to Nx 24.
+
+### Verified end-to-end
+- `nx run-many -t lint test` → 3 projects, **10 tests pass**, 0 lint errors.
+- `nx build shell` → succeeds; `home-feature-shell` emitted as a **lazy chunk**; Tailwind `@source` scanning confirmed (lib-only classes like `bg-brand-500`, `rounded-btn`, `min-h-dvh` present in the compiled CSS).
+- Module boundaries confirmed by probe: an atom→molecule import and a `type:ui`→`type:feature` import both **fail lint** as designed.

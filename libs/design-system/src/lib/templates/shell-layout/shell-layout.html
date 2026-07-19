@@ -1,0 +1,13 @@
+<div class="flex min-h-dvh flex-col bg-surface-muted text-current">
+  <ng-content select="[header]" />
+
+  <div class="mx-auto flex w-full max-w-5xl flex-1 gap-6 p-6">
+    <aside class="hidden w-56 shrink-0 md:block">
+      <ng-content select="[nav]" />
+    </aside>
+
+    <main class="min-w-0 flex-1">
+      <ng-content />
+    </main>
+  </div>
+</div>

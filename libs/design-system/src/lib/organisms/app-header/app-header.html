@@ -1,0 +1,14 @@
+<header
+  class="flex h-14 items-center justify-between border-b border-border bg-surface px-4"
+>
+  <div class="flex items-center gap-2">
+    <span class="size-6 rounded-md bg-brand-500"></span>
+    <span class="text-base font-semibold text-current">
+      <ng-content select="[brand]">toto</ng-content>
+    </span>
+  </div>
+
+  <button ds-button intent="ghost" size="sm" (click)="action.emit()">
+    <ng-content select="[action-label]">Action</ng-content>
+  </button>
+</header>
