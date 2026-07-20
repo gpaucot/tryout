@@ -1,81 +1,81 @@
 {
-  "name": "dash",
-  "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "projectType": "application",
-  "prefix": "app",
-  "sourceRoot": "apps/dash/src",
-  "tags": ["type:app", "scope:dash"],
-  "targets": {
-    "build": {
-      "executor": "@angular/build:application",
-      "outputs": ["{options.outputPath}"],
-      "defaultConfiguration": "production",
-      "options": {
-        "outputPath": "dist/apps/dash",
-        "browser": "apps/dash/src/main.ts",
-        "tsConfig": "apps/dash/tsconfig.app.json",
-        "assets": [
-          {
-            "glob": "**/*",
-            "input": "apps/dash/public"
-          }
-        ],
-        "styles": ["apps/dash/src/styles.css"]
-      },
-      "configurations": {
-        "production": {
-          "budgets": [
-            {
-              "type": "initial",
-              "maximumWarning": "500kb",
-              "maximumError": "1mb"
+    "name": "dash",
+    "$schema": "../../node_modules/nx/schemas/project-schema.json",
+    "projectType": "application",
+    "prefix": "app",
+    "sourceRoot": "apps/dash/src",
+    "tags": ["type:app", "scope:dash"],
+    "targets": {
+        "build": {
+            "executor": "@angular/build:application",
+            "outputs": ["{options.outputPath}"],
+            "defaultConfiguration": "production",
+            "options": {
+                "outputPath": "dist/apps/dash",
+                "browser": "apps/dash/src/main.ts",
+                "tsConfig": "apps/dash/tsconfig.app.json",
+                "assets": [
+                    {
+                        "glob": "**/*",
+                        "input": "apps/dash/public"
+                    }
+                ],
+                "styles": ["apps/dash/src/styles.css"]
             },
-            {
-              "type": "anyComponentStyle",
-              "maximumWarning": "4kb",
-              "maximumError": "8kb"
+            "configurations": {
+                "production": {
+                    "budgets": [
+                        {
+                            "type": "initial",
+                            "maximumWarning": "500kb",
+                            "maximumError": "1mb"
+                        },
+                        {
+                            "type": "anyComponentStyle",
+                            "maximumWarning": "4kb",
+                            "maximumError": "8kb"
+                        }
+                    ],
+                    "outputHashing": "all"
+                },
+                "development": {
+                    "optimization": false,
+                    "extractLicenses": false,
+                    "sourceMap": true
+                }
             }
-          ],
-          "outputHashing": "all"
         },
-        "development": {
-          "optimization": false,
-          "extractLicenses": false,
-          "sourceMap": true
-        }
-      }
-    },
-    "serve": {
-      "continuous": true,
-      "executor": "@angular/build:dev-server",
-      "defaultConfiguration": "development",
-      "configurations": {
-        "production": {
-          "buildTarget": "dash:build:production"
+        "serve": {
+            "continuous": true,
+            "executor": "@angular/build:dev-server",
+            "defaultConfiguration": "development",
+            "configurations": {
+                "production": {
+                    "buildTarget": "dash:build:production"
+                },
+                "development": {
+                    "buildTarget": "dash:build:development"
+                }
+            }
         },
-        "development": {
-          "buildTarget": "dash:build:development"
+        "test": {
+            "executor": "@nx/vitest:test",
+            "outputs": ["{options.reportsDirectory}"],
+            "options": {
+                "reportsDirectory": "coverage/apps/dash"
+            }
+        },
+        "lint": {
+            "executor": "@nx/eslint:lint"
+        },
+        "serve-static": {
+            "continuous": true,
+            "executor": "@nx/web:file-server",
+            "options": {
+                "buildTarget": "dash:build",
+                "staticFilePath": "dist/apps/dash/browser",
+                "spa": true
+            }
         }
-      }
-    },
-    "test": {
-      "executor": "@nx/vitest:test",
-      "outputs": ["{options.reportsDirectory}"],
-      "options": {
-        "reportsDirectory": "coverage/apps/dash"
-      }
-    },
-    "lint": {
-      "executor": "@nx/eslint:lint"
-    },
-    "serve-static": {
-      "continuous": true,
-      "executor": "@nx/web:file-server",
-      "options": {
-        "buildTarget": "dash:build",
-        "staticFilePath": "dist/apps/dash/browser",
-        "spa": true
-      }
     }
-  }
 }

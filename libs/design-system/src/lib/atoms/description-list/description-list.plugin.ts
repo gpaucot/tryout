@@ -1,8 +1,8 @@
 import {
-  InjectionToken,
-  type InputSignal,
-  type Provider,
-  type Type,
+    InjectionToken,
+    type InputSignal,
+    type Provider,
+    type Type,
 } from '@angular/core';
 
 /**
@@ -11,8 +11,8 @@ import {
  * value renders — the core places no constraints on its output.
  */
 export interface DescriptionValueComponent {
-  readonly value: InputSignal<unknown>;
-  readonly options: InputSignal<Readonly<Record<string, unknown>>>;
+    readonly value: InputSignal<unknown>;
+    readonly options: InputSignal<Readonly<Record<string, unknown>>>;
 }
 
 /**
@@ -20,10 +20,10 @@ export interface DescriptionValueComponent {
  * This is the single extension unit — built-ins and user plugins share it.
  */
 export interface DescriptionValuePlugin {
-  /** The `DescriptionItem.type` this plugin handles (e.g. 'currency'). */
-  readonly type: string;
-  /** The component that renders values of this type. */
-  readonly component: Type<DescriptionValueComponent>;
+    /** The `DescriptionItem.type` this plugin handles (e.g. 'currency'). */
+    readonly type: string;
+    /** The component that renders values of this type. */
+    readonly component: Type<DescriptionValueComponent>;
 }
 
 /**
@@ -32,7 +32,7 @@ export interface DescriptionValuePlugin {
  * and never hardcodes types.
  */
 export const DESCRIPTION_VALUE_PLUGINS = new InjectionToken<
-  readonly DescriptionValuePlugin[]
+    readonly DescriptionValuePlugin[]
 >('DESCRIPTION_VALUE_PLUGINS');
 
 /**
@@ -41,7 +41,7 @@ export const DESCRIPTION_VALUE_PLUGINS = new InjectionToken<
  * {@link DESCRIPTION_VALUE_PLUGINS} / {@link provideDescriptionValuePlugins}.
  */
 export const DESCRIPTION_DEFAULT_VALUE_PLUGINS = new InjectionToken<
-  readonly DescriptionValuePlugin[]
+    readonly DescriptionValuePlugin[]
 >('DESCRIPTION_DEFAULT_VALUE_PLUGINS');
 
 /**
@@ -55,11 +55,11 @@ export const DESCRIPTION_DEFAULT_VALUE_PLUGINS = new InjectionToken<
  * ]
  */
 export function provideDescriptionValuePlugins(
-  ...plugins: readonly DescriptionValuePlugin[]
+    ...plugins: readonly DescriptionValuePlugin[]
 ): Provider[] {
-  return plugins.map((plugin) => ({
-    provide: DESCRIPTION_VALUE_PLUGINS,
-    useValue: plugin,
-    multi: true,
-  }));
+    return plugins.map((plugin) => ({
+        provide: DESCRIPTION_VALUE_PLUGINS,
+        useValue: plugin,
+        multi: true,
+    }));
 }

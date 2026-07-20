@@ -1,12 +1,12 @@
 @for (item of items(); track $index) {
-  <div [class]="rowClasses()">
+<div [class]="rowClasses()">
     <dt [class]="termClasses">{{ item.term }}</dt>
     <dd [class]="descriptionClasses">
-      <ds-description-value
-        [value]="item.value"
-        [type]="item.type ?? 'string'"
-        [options]="item.options ?? {}"
-      ></ds-description-value>
+        <ds-description-value
+            [value]="item.value"
+            [type]="item.type ?? 'string'"
+            [options]="item.options ?? {}"
+        ></ds-description-value>
     </dd>
-  </div>
+</div>
 }

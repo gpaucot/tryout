@@ -1,0 +1,7 @@
+{
+    "singleQuote": true,
+    "tabWidth": 4,
+    "printWidth": 80,
+    "sortPackageJson": false,
+    "ignorePatterns": ["dist", "coverage", ".nx", ".angular"]
+}

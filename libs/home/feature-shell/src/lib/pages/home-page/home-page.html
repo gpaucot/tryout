@@ -1,62 +1,70 @@
 <ds-shell-layout>
-  <ds-app-header header (action)="onAction()">
-    <span brand>toto</span>
-    <span action-label>New</span>
-  </ds-app-header>
+    <ds-app-header header (action)="onAction()">
+        <span brand>toto</span>
+        <span action-label>New</span>
+    </ds-app-header>
 
-  <nav nav class="flex flex-col gap-1 text-sm">
-    <a class="rounded-md px-3 py-2 font-medium text-brand-700 bg-brand-50">Home</a>
-    <a class="rounded-md px-3 py-2 text-current/70 hover:bg-surface">Settings</a>
-  </nav>
+    <nav nav class="flex flex-col gap-1 text-sm">
+        <a class="rounded-md px-3 py-2 font-medium text-brand-700 bg-brand-50"
+            >Home</a
+        >
+        <a class="rounded-md px-3 py-2 text-current/70 hover:bg-surface"
+            >Settings</a
+        >
+    </nav>
 
-  <section class="flex flex-col gap-6">
-    <div class="rounded-card border border-border bg-surface p-6">
-      <h1 class="text-lg font-semibold">Foundation is running</h1>
-      <p class="mt-1 text-sm text-current/70">
-        Atom → molecule → organism → template → page, all wired through
-        <code>&#64;toto/design-system</code>.
-      </p>
+    <section class="flex flex-col gap-6">
+        <div class="rounded-card border border-border bg-surface p-6">
+            <h1 class="text-lg font-semibold">Foundation is running</h1>
+            <p class="mt-1 text-sm text-current/70">
+                Atom → molecule → organism → template → page, all wired through
+                <code>&#64;toto/design-system</code>.
+            </p>
 
-      <div class="mt-4 max-w-sm">
-        <ds-form-field label="Project name" placeholder="my-app" />
-      </div>
+            <div class="mt-4 max-w-sm">
+                <ds-form-field label="Project name" placeholder="my-app" />
+            </div>
 
-      <div class="mt-4 flex items-center gap-3">
-        <button ds-button (click)="onAction()">Primary action</button>
-        <button ds-button intent="ghost">Ghost</button>
-        <span class="text-sm text-current/60">clicks: {{ clicks() }}</span>
-      </div>
-    </div>
+            <div class="mt-4 flex items-center gap-3">
+                <button ds-button (click)="onAction()">Primary action</button>
+                <button ds-button intent="ghost">Ghost</button>
+                <span class="text-sm text-current/60"
+                    >clicks: {{ clicks() }}</span
+                >
+            </div>
+        </div>
 
-    <div class="grid gap-6 rounded-card border border-border bg-surface p-6 sm:grid-cols-3">
-      <div class="flex flex-col gap-2">
-        <span class="text-sm font-medium">Select (filterable)</span>
-        <ds-select
-          [options]="fruits"
-          [(value)]="fruit"
-          [filterable]="true"
-          placeholder="Pick a fruit"
-        />
-        <span class="text-sm text-current/60">value: {{ fruit() ?? '—' }}</span>
-      </div>
+        <div
+            class="grid gap-6 rounded-card border border-border bg-surface p-6 sm:grid-cols-3"
+        >
+            <div class="flex flex-col gap-2">
+                <span class="text-sm font-medium">Select (filterable)</span>
+                <ds-select
+                    [options]="fruits"
+                    [(value)]="fruit"
+                    [filterable]="true"
+                    placeholder="Pick a fruit"
+                />
+                <span class="text-sm text-current/60"
+                    >value: {{ fruit() ?? '—' }}</span
+                >
+            </div>
 
-      <ds-radio-group
-        legend="Plan"
-        [options]="plans"
-        [(value)]="plan"
-      />
+            <ds-radio-group legend="Plan" [options]="plans" [(value)]="plan" />
 
-      <ds-checkbox-group
-        legend="Toppings (filterable)"
-        [options]="fruits"
-        [(value)]="toppings"
-        [filterable]="true"
-      />
-    </div>
+            <ds-checkbox-group
+                legend="Toppings (filterable)"
+                [options]="fruits"
+                [(value)]="toppings"
+                [filterable]="true"
+            />
+        </div>
 
-    <div class="rounded-card border border-border bg-surface p-6">
-      <h2 class="mb-3 text-sm font-semibold">Details (description list)</h2>
-      <dl ds-description-list orientation="inline" [items]="details"></dl>
-    </div>
-  </section>
+        <div class="rounded-card border border-border bg-surface p-6">
+            <h2 class="mb-3 text-sm font-semibold">
+                Details (description list)
+            </h2>
+            <dl ds-description-list orientation="inline" [items]="details"></dl>
+        </div>
+    </section>
 </ds-shell-layout>

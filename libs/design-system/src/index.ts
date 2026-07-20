@@ -8,21 +8,24 @@
 
 // atoms
 export { Button } from './lib/atoms/button/button';
-export type { ButtonIntent, ButtonSize } from './lib/atoms/button/button.variants';
+export type {
+    ButtonIntent,
+    ButtonSize,
+} from './lib/atoms/button/button.variants';
 export { Input } from './lib/atoms/input/input';
 export type { InputSize } from './lib/atoms/input/input.variants';
 export { DescriptionList } from './lib/atoms/description-list/description-list';
 export type {
-  DescriptionListOrientation,
-  DescriptionListSize,
+    DescriptionListOrientation,
+    DescriptionListSize,
 } from './lib/atoms/description-list/description-list.variants';
 export {
-  DESCRIPTION_VALUE_PLUGINS,
-  provideDescriptionValuePlugins,
+    DESCRIPTION_VALUE_PLUGINS,
+    provideDescriptionValuePlugins,
 } from './lib/atoms/description-list/description-list.plugin';
 export type {
-  DescriptionValuePlugin,
-  DescriptionValueComponent,
+    DescriptionValuePlugin,
+    DescriptionValueComponent,
 } from './lib/atoms/description-list/description-list.plugin';
 
 // molecules

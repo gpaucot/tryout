@@ -18,9 +18,9 @@ export type ElementOf<T extends readonly unknown[]> = T[number];
  * pre-selection compare by identity (`Object.is`).
  */
 export interface SelectOption<T> {
-  readonly value: T;
-  readonly label: string;
-  readonly disabled?: boolean;
+    readonly value: T;
+    readonly label: string;
+    readonly disabled?: boolean;
 }
 
 /** A collection of choices. */
@@ -35,12 +35,12 @@ export type SelectOptions<T> = readonly SelectOption<T>[];
  * type without changing the component.
  */
 export interface DescriptionItem {
-  readonly term: string;
-  readonly value: unknown;
-  /** Formatter discriminator. Defaults to 'string'. */
-  readonly type?: string;
-  /** Formatter-specific options (currency code, locale, boolean labels, …). */
-  readonly options?: Readonly<Record<string, unknown>>;
+    readonly term: string;
+    readonly value: unknown;
+    /** Formatter discriminator. Defaults to 'string'. */
+    readonly type?: string;
+    /** Formatter-specific options (currency code, locale, boolean labels, …). */
+    readonly options?: Readonly<Record<string, unknown>>;
 }
 
 /** A collection of term/value pairs. */

@@ -1,25 +1,27 @@
 {
-  "compileOnSave": false,
-  "compilerOptions": {
-    "rootDir": ".",
-    "sourceMap": true,
-    "declaration": false,
-    "moduleResolution": "bundler",
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "importHelpers": true,
-    "target": "es2015",
-    "module": "esnext",
-    "lib": ["es2020", "dom"],
-    "skipLibCheck": true,
-    "skipDefaultLibCheck": true,
-    "strict": false,
-    "paths": {
-      "@dash/design-system": ["./libs/design-system/src/index.ts"],
-      "@dash/home-feature-shell": ["./libs/home/feature-shell/src/index.ts"],
-      "@dash/ui-styles": ["./libs/shared/ui-styles/src/index.ts"],
-      "@dash/util-types": ["./libs/shared/util-types/src/index.ts"]
-    }
-  },
-  "exclude": ["node_modules", "tmp"]
+    "compileOnSave": false,
+    "compilerOptions": {
+        "rootDir": ".",
+        "sourceMap": true,
+        "declaration": false,
+        "moduleResolution": "bundler",
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "importHelpers": true,
+        "target": "es2015",
+        "module": "esnext",
+        "lib": ["es2020", "dom"],
+        "skipLibCheck": true,
+        "skipDefaultLibCheck": true,
+        "strict": false,
+        "paths": {
+            "@dash/design-system": ["./libs/design-system/src/index.ts"],
+            "@dash/home-feature-shell": [
+                "./libs/home/feature-shell/src/index.ts"
+            ],
+            "@dash/ui-styles": ["./libs/shared/ui-styles/src/index.ts"],
+            "@dash/util-types": ["./libs/shared/util-types/src/index.ts"]
+        }
+    },
+    "exclude": ["node_modules", "tmp"]
 }

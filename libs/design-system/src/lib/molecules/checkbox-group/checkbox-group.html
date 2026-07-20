@@ -1,35 +1,29 @@
 <fieldset [class]="groupClasses()" [attr.aria-invalid]="invalid() || null">
-  @if (legend()) {
+    @if (legend()) {
     <legend [class]="legendClasses()">{{ legend() }}</legend>
-  }
-
-  @if (filterable()) {
+    } @if (filterable()) {
     <input
-      ds-input
-      class="mb-1"
-      [size]="size()"
-      [value]="query()"
-      [placeholder]="searchPlaceholder()"
-      (input)="query.set($any($event.target).value)"
-      role="searchbox"
-      aria-label="Filter options"
+        ds-input
+        class="mb-1"
+        [size]="size()"
+        [value]="query()"
+        [placeholder]="searchPlaceholder()"
+        (input)="query.set($any($event.target).value)"
+        role="searchbox"
+        aria-label="Filter options"
     />
-  }
-
-  @for (opt of filtered(); track opt.value) {
+    } @for (opt of filtered(); track opt.value) {
     <label [class]="optionClasses(opt)">
-      <input
-        type="checkbox"
-        [class]="controlClasses()"
-        [checked]="isChecked(opt.value)"
-        [disabled]="disabled() || opt.disabled"
-        (change)="toggle(opt)"
-      />
-      <span>{{ opt.label }}</span>
+        <input
+            type="checkbox"
+            [class]="controlClasses()"
+            [checked]="isChecked(opt.value)"
+            [disabled]="disabled() || opt.disabled"
+            (change)="toggle(opt)"
+        />
+        <span>{{ opt.label }}</span>
     </label>
-  }
-
-  @if (filtered().length === 0) {
+    } @if (filtered().length === 0) {
     <p class="text-sm text-current/60">No matches</p>
-  }
+    }
 </fieldset>
