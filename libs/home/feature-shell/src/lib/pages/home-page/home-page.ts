@@ -9,8 +9,14 @@ import {
     RadioGroup,
     Select,
     ShellLayout,
+    TabPanel,
+    Tabs,
 } from '@dash/design-system';
-import type { DescriptionItems, SelectOptions } from '@dash/util-types';
+import type {
+    DescriptionItems,
+    SelectOptions,
+    TabItems,
+} from '@dash/util-types';
 import { StatusBadgeValue } from './status-badge-value';
 
 /**
@@ -31,6 +37,8 @@ import { StatusBadgeValue } from './status-badge-value';
         RadioGroup,
         CheckboxGroup,
         DescriptionList,
+        Tabs,
+        TabPanel,
     ],
     providers: [
         // Consumer extends the DescriptionList with a custom value type — no
@@ -57,6 +65,13 @@ export class HomePage {
     protected readonly fruit = signal<string | undefined>(undefined);
     protected readonly plan = signal<string | undefined>('free');
     protected readonly toppings = signal<readonly string[]>(['apple']);
+
+    protected readonly section = signal('overview');
+    protected readonly sections: TabItems<string> = [
+        { value: 'overview', label: 'Overview' },
+        { value: 'activity', label: 'Activity' },
+        { value: 'archived', label: 'Archived', disabled: true },
+    ];
 
     protected readonly plans: SelectOptions<string> = [
         { value: 'free', label: 'Free' },

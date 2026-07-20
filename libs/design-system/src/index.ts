@@ -36,6 +36,12 @@ export { RadioGroup } from './lib/molecules/radio-group/radio-group';
 export type { RadioGroupSize } from './lib/molecules/radio-group/radio-group.variants';
 export { CheckboxGroup } from './lib/molecules/checkbox-group/checkbox-group';
 export type { CheckboxGroupSize } from './lib/molecules/checkbox-group/checkbox-group.variants';
+export { Tabs } from './lib/molecules/tabs/tabs';
+export { TabPanel } from './lib/molecules/tabs/tab-panel';
+export type {
+    TabsOrientation,
+    TabsSize,
+} from './lib/molecules/tabs/tabs.variants';
 
 // organisms
 export { AppHeader } from './lib/organisms/app-header/app-header';

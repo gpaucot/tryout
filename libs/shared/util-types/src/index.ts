@@ -4,6 +4,8 @@ export type {
     ElementOf,
     SelectOption,
     SelectOptions,
+    TabItem,
+    TabItems,
     DescriptionItem,
     DescriptionItems,
 } from './lib/util-types';

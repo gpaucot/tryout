@@ -27,6 +27,30 @@ export interface SelectOption<T> {
 export type SelectOptions<T> = readonly SelectOption<T>[];
 
 /**
+ * A single tab in a tab group.
+ *
+ * `value` identifies the tab (compared by identity, `Object.is`). A plain tab
+ * is a selection tab: activating it sets the group's value. When `link` is
+ * present the tab becomes a navigation link instead — it renders as an anchor
+ * whose active state follows the router, and activating it navigates.
+ */
+export interface TabItem<T> {
+    readonly value: T;
+    readonly label: string;
+    readonly disabled?: boolean;
+    /**
+     * RouterLink target. When set, the tab renders as a navigation link
+     * (a routed `<a>`) rather than a selection tab.
+     */
+    readonly link?: string | readonly unknown[];
+    /** For link tabs: require an exact URL match to be considered active. */
+    readonly exact?: boolean;
+}
+
+/** A collection of tabs. */
+export type TabItems<T> = readonly TabItem<T>[];
+
+/**
  * A single term/value pair in a description list.
  *
  * `value` is intentionally `unknown`: how it renders is decided by the
