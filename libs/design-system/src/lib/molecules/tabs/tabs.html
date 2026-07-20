@@ -1,45 +1,95 @@
-<div [class]="scrollerClasses()">
-    <div
-        role="tablist"
-        [class]="listClasses()"
-        [attr.aria-label]="label() || null"
-        [attr.aria-orientation]="orientation()"
-    >
-        @for (item of items(); track item.value; let i = $index) { @if
-        (isLink(item)) {
-        <a
-            #tabEl
-            role="tab"
-            [class]="tabClasses(item)"
-            [routerLink]="item.link"
-            [routerLinkActive]="activeClasses()"
-            [routerLinkActiveOptions]="{ exact: item.exact ?? false }"
-            #rla="routerLinkActive"
-            [attr.aria-selected]="rla.isActive"
-            [attr.aria-current]="rla.isActive ? 'page' : null"
-            [attr.aria-disabled]="item.disabled || null"
-            [attr.tabindex]="tabIndex(item, i)"
-            (keydown)="onKeydown($event, i)"
-            >{{ item.label }}</a
+<div class="relative">
+    <div #scroller [class]="scrollerClasses()" (scroll)="updateScroll()">
+        <div
+            role="tablist"
+            [class]="listClasses()"
+            [attr.aria-label]="label() || null"
+            [attr.aria-orientation]="orientation()"
         >
-        } @else {
-        <button
-            #tabEl
-            type="button"
-            role="tab"
-            [class]="tabClasses(item)"
-            [id]="tabId(item.value)"
-            [disabled]="item.disabled"
-            [attr.aria-selected]="isSelected(item.value)"
-            [attr.aria-controls]="panelId(item.value)"
-            [attr.tabindex]="tabIndex(item, i)"
-            (click)="select(item)"
-            (keydown)="onKeydown($event, i)"
-        >
-            {{ item.label }}
-        </button>
-        } }
+            @for (item of items(); track item.value; let i = $index) { @if
+            (isLink(item)) {
+            <a
+                #tabEl
+                role="tab"
+                [class]="tabClasses(item)"
+                [routerLink]="item.link"
+                [routerLinkActive]="activeClasses()"
+                [routerLinkActiveOptions]="{ exact: item.exact ?? false }"
+                #rla="routerLinkActive"
+                [attr.aria-selected]="rla.isActive"
+                [attr.aria-current]="rla.isActive ? 'page' : null"
+                [attr.aria-disabled]="item.disabled || null"
+                [attr.tabindex]="tabIndex(item, i)"
+                (keydown)="onKeydown($event, i)"
+                >{{ item.label }}</a
+            >
+            } @else {
+            <button
+                #tabEl
+                type="button"
+                role="tab"
+                [class]="tabClasses(item)"
+                [id]="tabId(item.value)"
+                [disabled]="item.disabled"
+                [attr.aria-selected]="isSelected(item.value)"
+                [attr.aria-controls]="panelId(item.value)"
+                [attr.tabindex]="tabIndex(item, i)"
+                (click)="select(item)"
+                (keydown)="onKeydown($event, i)"
+            >
+                {{ item.label }}
+            </button>
+            } }
+        </div>
     </div>
+
+    @if (isHorizontal() && canScrollStart()) {
+    <button
+        type="button"
+        tabindex="-1"
+        aria-hidden="true"
+        [class]="scrollButtonClasses('start')"
+        (click)="scrollTabs(-1)"
+    >
+        <svg
+            class="size-4"
+            viewBox="0 0 20 20"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            aria-hidden="true"
+        >
+            <path
+                d="M12 5l-5 5 5 5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            />
+        </svg>
+    </button>
+    } @if (isHorizontal() && canScrollEnd()) {
+    <button
+        type="button"
+        tabindex="-1"
+        aria-hidden="true"
+        [class]="scrollButtonClasses('end')"
+        (click)="scrollTabs(1)"
+    >
+        <svg
+            class="size-4"
+            viewBox="0 0 20 20"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            aria-hidden="true"
+        >
+            <path
+                d="M8 5l5 5-5 5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            />
+        </svg>
+    </button>
+    }
 </div>
 
 <ng-content />

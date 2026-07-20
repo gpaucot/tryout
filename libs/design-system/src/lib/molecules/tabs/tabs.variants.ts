@@ -82,6 +82,24 @@ export const tabs = {
     panel: tv({
         base: 'block pt-4 focus-visible:outline-none',
     }),
+    /**
+     * Edge scroll affordance shown only when a horizontal strip overflows.
+     * Overlays the scroller end with a surface→transparent fade so mouse users
+     * (no visible scrollbar) can page the tabs into view.
+     */
+    scrollButton: tv({
+        base: [
+            'absolute top-0 bottom-px z-10 flex w-9 cursor-pointer items-center',
+            'text-current/60 transition-colors hover:text-current',
+            'focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-brand-600',
+        ],
+        variants: {
+            side: {
+                start: 'left-0 justify-start bg-gradient-to-r from-surface from-55% to-transparent',
+                end: 'right-0 justify-end bg-gradient-to-l from-surface from-55% to-transparent',
+            },
+        },
+    }),
 };
 
 export type TabsOrientation = NonNullable<

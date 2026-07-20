@@ -1,10 +1,16 @@
 import {
+    afterNextRender,
     ChangeDetectionStrategy,
     Component,
     computed,
+    DestroyRef,
+    effect,
     ElementRef,
+    inject,
     input,
     model,
+    signal,
+    viewChild,
     viewChildren,
 } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
@@ -49,6 +55,15 @@ export class Tabs<T> {
 
     private readonly groupId = `ds-tabs-${nextId++}`;
     private readonly tabEls = viewChildren<ElementRef<HTMLElement>>('tabEl');
+    private readonly scrollerEl =
+        viewChild<ElementRef<HTMLElement>>('scroller');
+
+    /** Whether the (horizontal) strip can scroll further in each direction. */
+    protected readonly canScrollStart = signal(false);
+    protected readonly canScrollEnd = signal(false);
+    protected readonly isHorizontal = computed(
+        () => this.orientation() === 'horizontal',
+    );
 
     protected readonly hostClasses = computed(() => cn('block', this.class()));
     protected readonly scrollerClasses = computed(() =>
@@ -59,6 +74,54 @@ export class Tabs<T> {
     );
     /** Indicator classes shared by selected buttons and active links. */
     protected readonly activeClasses = computed(() => tabs.active());
+
+    constructor() {
+        let observer: ResizeObserver | undefined;
+        afterNextRender(() => {
+            const el = this.scrollerEl()?.nativeElement;
+            if (!el) return;
+            // Recompute the affordance whenever the strip or its content resizes
+            // (viewport change, font load, tabs added/removed).
+            if (typeof ResizeObserver !== 'undefined') {
+                observer = new ResizeObserver(() => this.updateScroll());
+                observer.observe(el);
+                if (el.firstElementChild)
+                    observer.observe(el.firstElementChild);
+            }
+            this.updateScroll();
+        });
+        // Re-measure after the tab set or orientation changes.
+        effect(() => {
+            this.items();
+            this.orientation();
+            queueMicrotask(() => this.updateScroll());
+        });
+        inject(DestroyRef).onDestroy(() => observer?.disconnect());
+    }
+
+    protected scrollButtonClasses(side: 'start' | 'end'): string {
+        return tabs.scrollButton({ side });
+    }
+
+    /** Refresh the can-scroll signals from the scroller's geometry. */
+    protected updateScroll(): void {
+        const el = this.scrollerEl()?.nativeElement;
+        if (!el || !this.isHorizontal()) {
+            this.canScrollStart.set(false);
+            this.canScrollEnd.set(false);
+            return;
+        }
+        const max = el.scrollWidth - el.clientWidth;
+        this.canScrollStart.set(el.scrollLeft > 1);
+        this.canScrollEnd.set(el.scrollLeft < max - 1);
+    }
+
+    /** Page the strip roughly one viewport toward `dir` (1 = end, -1 = start). */
+    protected scrollTabs(dir: 1 | -1): void {
+        const el = this.scrollerEl()?.nativeElement;
+        if (!el) return;
+        el.scrollBy({ left: dir * el.clientWidth * 0.75, behavior: 'smooth' });
+    }
 
     protected tabClasses(item: TabItem<T>): string {
         const base = tabs.tab({
