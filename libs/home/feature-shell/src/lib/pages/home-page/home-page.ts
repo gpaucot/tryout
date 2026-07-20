@@ -67,9 +67,14 @@ export class HomePage {
     protected readonly toppings = signal<readonly string[]>(['apple']);
 
     protected readonly section = signal('overview');
+    // Enough tabs that the strip overflows on an iPhone 6 — it scrolls
+    // horizontally rather than widening the page.
     protected readonly sections: TabItems<string> = [
         { value: 'overview', label: 'Overview' },
         { value: 'activity', label: 'Activity' },
+        { value: 'members', label: 'Members' },
+        { value: 'integrations', label: 'Integrations' },
+        { value: 'billing', label: 'Billing' },
         { value: 'archived', label: 'Archived', disabled: true },
     ];
 

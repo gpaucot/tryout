@@ -51,6 +51,9 @@ export class Tabs<T> {
     private readonly tabEls = viewChildren<ElementRef<HTMLElement>>('tabEl');
 
     protected readonly hostClasses = computed(() => cn('block', this.class()));
+    protected readonly scrollerClasses = computed(() =>
+        tabs.scroller({ orientation: this.orientation() }),
+    );
     protected readonly listClasses = computed(() =>
         tabs.list({ orientation: this.orientation() }),
     );

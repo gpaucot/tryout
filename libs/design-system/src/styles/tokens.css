@@ -18,3 +18,15 @@
     --radius-btn: 0.5rem;
     --radius-card: 0.75rem;
 }
+
+/*
+ * Hide the scrollbar while keeping the element scrollable. Used by horizontally
+ * scrollable strips (e.g. the Tabs tablist) so they overflow gracefully on
+ * narrow screens without a persistent scrollbar under the content.
+ */
+@utility scrollbar-none {
+    scrollbar-width: none;
+    &::-webkit-scrollbar {
+        display: none;
+    }
+}

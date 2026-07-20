@@ -31,7 +31,9 @@ export const descriptionList = {
         variants: {
             orientation: {
                 stacked: 'flex flex-col gap-0.5',
-                inline: 'grid grid-cols-[minmax(0,10rem)_1fr] items-baseline gap-4',
+                // Stacks on narrow screens (iPhone 6) so the term never eats the
+                // value's width; becomes a two-column grid from `sm` up.
+                inline: 'flex flex-col gap-0.5 sm:grid sm:grid-cols-[minmax(0,10rem)_1fr] sm:items-baseline sm:gap-4',
             },
         },
         defaultVariants: { orientation: 'stacked' },
@@ -39,10 +41,10 @@ export const descriptionList = {
     /** The `<dt>` term. */
     term: tv({ base: 'font-medium text-current/60' }),
     /** The `<dd>` description. */
-    description: tv({ base: 'text-current' }),
+    description: tv({ base: 'min-w-0 break-words text-current' }),
     /** Shared anchor styling for link-shaped value plugins. */
     link: tv({
-        base: 'text-brand-700 underline underline-offset-2 hover:text-brand-500',
+        base: 'break-words text-brand-700 underline underline-offset-2 hover:text-brand-500',
     }),
     /** Wrapper for list-shaped value plugins (e.g. array). */
     list: tv({ base: 'flex flex-wrap gap-1.5' }),

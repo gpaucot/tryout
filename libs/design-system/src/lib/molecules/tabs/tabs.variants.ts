@@ -6,12 +6,29 @@ import { tv, type VariantProps } from 'tailwind-variants';
  * Only the derived `TabsOrientation` / `TabsSize` types are made public.
  */
 export const tabs = {
+    /**
+     * Wraps the tablist. On narrow screens a horizontal strip overflows here
+     * (scrollable, no visible scrollbar) instead of forcing the page wider.
+     */
+    scroller: tv({
+        base: 'max-w-full',
+        variants: {
+            orientation: {
+                horizontal: 'overflow-x-auto scrollbar-none',
+                vertical: '',
+            },
+        },
+        defaultVariants: { orientation: 'horizontal' },
+    }),
     /** The `role="tablist"` strip. */
     list: tv({
         base: 'flex gap-1',
         variants: {
             orientation: {
-                horizontal: 'flex-row border-b border-border',
+                // `w-max min-w-full` lets the row grow past the viewport (so the
+                // scroller can scroll it) while its border still spans the full
+                // width when the tabs don't fill it.
+                horizontal: 'w-max min-w-full flex-row border-b border-border',
                 vertical: 'flex-col border-l border-border',
             },
         },
@@ -24,9 +41,9 @@ export const tabs = {
      */
     tab: tv({
         base: [
-            'inline-flex select-none items-center gap-2 whitespace-nowrap font-medium',
+            'inline-flex shrink-0 select-none items-center gap-2 whitespace-nowrap font-medium',
             'text-current/70 transition-colors hover:text-current',
-            'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600',
+            'focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-brand-600',
             'disabled:cursor-not-allowed disabled:opacity-50',
         ],
         variants: {
@@ -36,8 +53,11 @@ export const tabs = {
                 lg: 'h-12 px-4 text-base',
             },
             orientation: {
-                horizontal: '-mb-px border-b-2 border-transparent',
-                vertical: '-ml-px justify-start border-l-2 border-transparent',
+                // No negative margin: the tab's own bottom/left border sits flush
+                // against the list border, so the scroller never has to clip a
+                // 1px overflow (which would show a stray vertical scrollbar).
+                horizontal: 'border-b-2 border-transparent',
+                vertical: 'justify-start border-l-2 border-transparent',
             },
             disabled: {
                 true: '',
