@@ -1,102 +1,84 @@
-# Toto
+# dash
 
-<a alt="Nx logo" href="https://nx.dev" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="45"></a>
+An Angular 21 modular foundation: an Nx monorepo, an internal Atomic-Design
+design system, and a thin `dash` app that composes them. It is a
+well-architected, boundary-enforced **starting point** — not a finished product.
+Domain/business features are intentionally out of scope (see [`prd.md`](./prd.md)
+for the full product requirements).
 
-✨ Your new, shiny [Nx workspace](https://nx.dev) is ready ✨.
+## Architecture
 
-[Learn more about this workspace setup and its capabilities](https://nx.dev/getting-started/tutorials/angular-monorepo-tutorial?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) or run `npx nx graph` to visually explore what was created. Now, let's get you up to speed!
+Two ideas shape the whole workspace:
 
-## Run tasks
+- **Deep modules (Ousterhout).** The Nx _library_ is the deep module: it exposes
+  a single narrow public API — one `index.ts` barrel — and hides a rich interior
+  (components, `*.variants.ts` styling configs, helpers). We get modularity at the
+  library boundary and depth within it. Consumers import from `@dash/design-system`,
+  never a deep path like `@dash/design-system/src/lib/atoms/...` (deep imports are
+  lint errors).
 
-To run the dev server for your app, use:
+- **Atomic design.** Components are layered atoms → molecules → organisms →
+  templates → pages. State and routing live only at the **page** level, which is
+  why pages sit in a feature lib, not the design system.
 
-```sh
-npx nx serve shell
+Dependencies flow one way, enforced in two dimensions: across libraries by Nx tags
+(`@nx/enforce-module-boundaries`) and within the design system by ESLint import
+rules (atomic direction).
+
+## Layout
+
+```
+apps/
+  dash/                     Thin application shell; wires the design system into routes.
+libs/
+  design-system/            The design system (deep module). One barrel: @dash/design-system.
+    src/lib/atoms/          Button, Input, DescriptionList
+    src/lib/molecules/      FormField, Select, RadioGroup, CheckboxGroup, Tabs
+    src/lib/organisms/      AppHeader
+    src/lib/templates/      ShellLayout
+  home/feature-shell/       Routed pages (own state/routing). @dash/home-feature-shell
+  shared/util-types/        Framework-agnostic TypeScript types. @dash/util-types
+  shared/ui-styles/          Styling helpers (e.g. `cn`) and tokens. @dash/ui-styles
 ```
 
-To create a production bundle:
+Each library has its own `README.md` describing its purpose and public surface.
+
+## Prerequisites
+
+- [Bun](https://bun.sh) — the package manager for this workspace (`bun.lock`).
 
 ```sh
-npx nx build shell
+bun install
 ```
 
-To see all available targets to run for a project, run:
+## Common tasks
+
+Run tasks through Nx. The application project is `dash`; libraries are addressed
+by their project name (e.g. `design-system`, `util-types`).
 
 ```sh
-npx nx show project shell
+bunx nx serve dash          # dev server
+bunx nx build dash          # production bundle → dist/apps/dash
+bunx nx test dash           # unit tests (Vitest)
+bunx nx lint dash           # ESLint, incl. module-boundary rules
+
+bunx nx test design-system  # test / lint any library by project name
+bunx nx run-many -t test lint   # everything
+bunx nx affected -t test lint   # only what your changes touched
 ```
 
-These targets are either [inferred automatically](https://nx.dev/concepts/inferred-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) or defined in the `project.json` or `package.json` files.
-
-[More about running tasks in the docs &raquo;](https://nx.dev/features/run-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Add new projects
-
-While you could add new projects to your workspace manually, you might want to leverage [Nx plugins](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) and their [code generation](https://nx.dev/features/generate-code?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) feature.
-
-Use the plugin's generator to create new projects.
-
-To generate a new application, use:
+Formatting is handled by [oxfmt](https://github.com/oxc-project/oxfmt) (4-space
+indent):
 
 ```sh
-npx nx g @nx/angular:app demo
+bun run format         # write
+bun run format:check   # verify (CI-friendly)
 ```
 
-To generate a new library, use:
+Explore the project graph with `bunx nx graph`.
 
-```sh
-npx nx g @nx/angular:lib mylib
-```
+## Tech stack
 
-You can use `npx nx list` to get a list of installed plugins. Then, run `npx nx list <plugin-name>` to learn about more specific capabilities of a particular plugin. Alternatively, [install Nx Console](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) to browse plugins and generators in your IDE.
-
-[Learn more about Nx plugins &raquo;](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) | [Browse the plugin registry &raquo;](https://nx.dev/plugin-registry?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Set up CI!
-
-### Step 1
-
-To connect to Nx Cloud, run the following command:
-
-```sh
-npx nx connect
-```
-
-Connecting to Nx Cloud ensures a [fast and scalable CI](https://nx.dev/ci/intro/why-nx-cloud?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) pipeline. It includes features such as:
-
-- [Remote caching](https://nx.dev/ci/features/remote-cache?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Task distribution across multiple machines](https://nx.dev/ci/features/distribute-task-execution?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Automated e2e test splitting](https://nx.dev/ci/features/split-e2e-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Task flakiness detection and rerunning](https://nx.dev/ci/features/flaky-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-### Step 2
-
-Use the following command to configure a CI workflow for your workspace:
-
-```sh
-npx nx g ci-workflow
-```
-
-[Learn more about Nx on CI](https://nx.dev/ci/intro/ci-with-nx#ready-get-started-with-your-provider?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Install Nx Console
-
-Nx Console is an editor extension that enriches your developer experience. It lets you run tasks, generate code, and improves code autocompletion in your IDE. It is available for VSCode and IntelliJ.
-
-[Install Nx Console &raquo;](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Useful links
-
-Learn more:
-
-- [Learn more about this workspace setup](https://nx.dev/getting-started/tutorials/angular-monorepo-tutorial?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Learn about Nx on CI](https://nx.dev/ci/intro/ci-with-nx?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Releasing Packages with Nx release](https://nx.dev/features/manage-releases?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [What are Nx plugins?](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-And join the Nx community:
-
-- [Discord](https://go.nx.dev/community)
-- [Follow us on X](https://twitter.com/nxdevtools) or [LinkedIn](https://www.linkedin.com/company/nrwl)
-- [Our Youtube channel](https://www.youtube.com/@nxdevtools)
-- [Our blog](https://nx.dev/blog?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+Angular 21 (standalone-only, no `NgModule`) · Nx ~23 · Bun · Vitest ·
+Tailwind CSS v4 with [tailwind-variants](https://www.tailwind-variants.org) ·
+ESLint flat config. See [`prd.md`](./prd.md) §3 for versions and rationale.

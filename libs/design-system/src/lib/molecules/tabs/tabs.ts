@@ -156,7 +156,7 @@ export class Tabs<T> {
 
     /** A tab is a navigation link when it carries a `link` target. */
     protected isLink(item: TabItem<T>): boolean {
-        return item.link !== null && item.link !== undefined;
+        return item.link != null;
     }
 
     protected select(item: TabItem<T>): void {
