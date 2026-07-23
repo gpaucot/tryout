@@ -18,14 +18,14 @@ import {
 
 /**
  * DescriptionList — atom.
- * A styled native `<dl>` host that renders term/value pairs from data. It is
+ * Renders term/value pairs from data into a native `<dl>`. It is
  * type-agnostic: each value is rendered by a plugin resolved from the registry,
  * so supporting a new value type never touches this component — register a
  * plugin via `provideDescriptionValuePlugins` instead. Built-ins are supplied
  * here as zero-config defaults through the same plugin contract.
  */
 @Component({
-    selector: 'dl[ds-description-list]',
+    selector: 'ds-description-list',
     changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [DescriptionValue],
     providers: [
@@ -36,7 +36,7 @@ import {
         },
     ],
     templateUrl: './description-list.html',
-    host: { '[class]': 'classes()' },
+    host: { class: 'contents' },
 })
 export class DescriptionList {
     readonly items = input.required<DescriptionItems>();

@@ -16,12 +16,11 @@ import type {
 
 @Component({
     imports: [DescriptionList],
-    template: `<dl
-        ds-description-list
+    template: `<ds-description-list
         [items]="items()"
         [orientation]="orientation()"
         [size]="size()"
-    ></dl>`,
+    ></ds-description-list>`,
 })
 class Host {
     items = signal<DescriptionItems>([]);
