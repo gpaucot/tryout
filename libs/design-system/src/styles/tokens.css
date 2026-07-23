@@ -1,22 +1,59 @@
 /*
- * Design tokens (Tailwind v4, CSS-first).
- * These `@theme` values generate utilities (e.g. `bg-brand-500`, `rounded-btn`)
- * and CSS custom properties consumed by tv() variant definitions.
+ * Design tokens (Tailwind v4, CSS-first) — "Flup" warm furniture theme.
+ *
+ * A modern admin-dashboard palette: cream/sand surfaces, an espresso ink,
+ * a warm terracotta brand accent (wood tone) and a deep espresso sidebar.
+ * These `@theme` values generate utilities (e.g. `bg-brand-500`, `text-ink`,
+ * `rounded-card`, `shadow-card`) and CSS custom properties consumed by tv()
+ * variant definitions across the design system.
  */
 @theme {
-    --color-brand-50: oklch(0.97 0.02 265);
-    --color-brand-100: oklch(0.93 0.04 265);
-    --color-brand-500: oklch(0.62 0.19 265);
-    --color-brand-600: oklch(0.55 0.18 265);
-    --color-brand-700: oklch(0.48 0.17 265);
+    /* Brand — warm terracotta / clay (furniture wood tone). */
+    --color-brand-50: oklch(0.955 0.022 60);
+    --color-brand-100: oklch(0.9 0.045 58);
+    --color-brand-500: oklch(0.63 0.135 47);
+    --color-brand-600: oklch(0.56 0.13 45);
+    --color-brand-700: oklch(0.46 0.11 45);
 
-    --color-surface: oklch(1 0 0);
-    --color-surface-muted: oklch(0.97 0.005 265);
-    --color-border: oklch(0.9 0.01 265);
+    /* Warm neutral surfaces — cream app background, near-white cards. */
+    --color-surface: oklch(0.995 0.004 85);
+    --color-surface-muted: oklch(0.965 0.01 85);
+    --color-border: oklch(0.9 0.012 80);
+
+    /* Foreground — deep espresso ink and a muted variant for secondary text. */
+    --color-ink: oklch(0.28 0.015 60);
+    --color-ink-muted: oklch(0.52 0.015 60);
+
+    /* Sidebar — dark espresso rail with warm off-white text. */
+    --color-sidebar: oklch(0.29 0.018 60);
+    --color-sidebar-hover: oklch(0.35 0.02 60);
+    --color-sidebar-foreground: oklch(0.93 0.008 85);
+    --color-sidebar-foreground-muted: oklch(0.72 0.014 80);
+
+    /* Feedback — muted sage for positive deltas, warm red for danger. */
+    --color-success-600: oklch(0.55 0.11 150);
     --color-danger-600: oklch(0.55 0.2 27);
 
-    --radius-btn: 0.5rem;
-    --radius-card: 0.75rem;
+    /* Softer, more generous radii for the modern dashboard look. */
+    --radius-btn: 0.625rem;
+    --radius-card: 1rem;
+
+    /* Soft, warm-tinted elevation used by cards. */
+    --shadow-card:
+        0 1px 2px oklch(0.3 0.02 60 / 0.04),
+        0 12px 28px -14px oklch(0.3 0.02 60 / 0.16);
+}
+
+/*
+ * Base foreground/background so `text-current` (used throughout the design
+ * system) resolves to the espresso ink, and the page sits on the cream
+ * surface even under overscroll.
+ */
+@layer base {
+    html {
+        background-color: var(--color-surface-muted);
+        color: var(--color-ink);
+    }
 }
 
 /*

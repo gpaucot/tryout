@@ -21,6 +21,17 @@ The public surface is the component classes plus their public variant/size
 **types** (e.g. `ButtonIntent`, `SelectSize`). Everything else stays private.
 See [`src/index.ts`](./src/index.ts) for the exact exports.
 
+## Theme (design tokens)
+
+The visual theme lives entirely in [`src/styles/tokens.css`](./src/styles/tokens.css)
+as Tailwind v4 `@theme` variables — a warm "Flup" furniture palette (cream
+surfaces, espresso `ink`, a terracotta `brand` accent and a dark `sidebar`
+rail). Components never hard-code colours; they compose semantic utilities
+(`bg-surface`, `text-ink`, `bg-brand-500`, `bg-sidebar`, `shadow-card`,
+`rounded-card`) that resolve to these tokens, so re-skinning the whole system
+is a single-file edit. Apps opt in by importing the token sheet (see
+`apps/dash/src/styles.css`).
+
 ## Extending DescriptionList
 
 `DescriptionList` renders arbitrary value types through a plugin registry. Register

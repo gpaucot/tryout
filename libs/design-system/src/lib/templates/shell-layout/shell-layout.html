@@ -1,12 +1,14 @@
-<div class="flex min-h-dvh flex-col bg-surface-muted text-current">
-    <ng-content select="[header]" />
+<div class="flex min-h-dvh bg-surface-muted text-ink">
+    <aside
+        class="hidden w-64 shrink-0 flex-col bg-sidebar text-sidebar-foreground md:flex"
+    >
+        <ng-content select="[nav]" />
+    </aside>
 
-    <div class="mx-auto flex w-full max-w-5xl flex-1 gap-6 p-4 sm:p-6">
-        <aside class="hidden w-56 shrink-0 md:block">
-            <ng-content select="[nav]" />
-        </aside>
+    <div class="flex min-w-0 flex-1 flex-col">
+        <ng-content select="[header]" />
 
-        <main class="min-w-0 flex-1">
+        <main class="mx-auto w-full max-w-5xl flex-1 p-4 sm:p-6 lg:p-8">
             <ng-content />
         </main>
     </div>

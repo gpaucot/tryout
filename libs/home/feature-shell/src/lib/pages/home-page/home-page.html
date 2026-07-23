@@ -1,51 +1,304 @@
 <ds-shell-layout>
-    <ds-app-header header (action)="onAction()">
-        <span brand>toto</span>
-        <span action-label>New</span>
-    </ds-app-header>
+    <nav nav class="flex h-full flex-col gap-1 p-4">
+        <div class="mb-3 flex items-center gap-2.5 px-2 py-2">
+            <span
+                class="grid size-9 place-items-center rounded-xl bg-brand-500 text-white"
+            >
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="size-5"
+                >
+                    <path d="M4 11V8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v3" />
+                    <path
+                        d="M2 13a2 2 0 0 1 2-2 2 2 0 0 1 2 2v3h12v-3a2 2 0 0 1 4 0v5H2Z"
+                    />
+                    <path d="M5 18v2M19 18v2" />
+                </svg>
+            </span>
+            <span
+                class="text-lg font-semibold tracking-tight text-sidebar-foreground"
+                >Flup</span
+            >
+        </div>
 
-    <nav nav class="flex flex-col gap-1 text-sm">
-        <a class="rounded-md px-3 py-2 font-medium text-brand-700 bg-brand-50"
-            >Home</a
+        <p
+            class="px-3 pt-2 pb-1 text-[11px] font-medium tracking-wider text-sidebar-foreground-muted uppercase"
         >
-        <a class="rounded-md px-3 py-2 text-current/70 hover:bg-surface"
-            >Settings</a
+            Menu
+        </p>
+
+        <a
+            class="flex items-center gap-3 rounded-lg bg-brand-500 px-3 py-2 text-sm font-medium text-white"
         >
+            <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="size-[18px] shrink-0"
+            >
+                <rect x="3" y="3" width="7" height="7" rx="1.5" />
+                <rect x="14" y="3" width="7" height="7" rx="1.5" />
+                <rect x="14" y="14" width="7" height="7" rx="1.5" />
+                <rect x="3" y="14" width="7" height="7" rx="1.5" />
+            </svg>
+            Dashboard
+        </a>
+
+        <a
+            class="flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-sidebar-foreground-muted transition-colors hover:bg-sidebar-hover hover:text-sidebar-foreground"
+        >
+            <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="size-[18px] shrink-0"
+            >
+                <path d="M4 11V8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v3" />
+                <path
+                    d="M2 13a2 2 0 0 1 2-2 2 2 0 0 1 2 2v3h12v-3a2 2 0 0 1 4 0v5H2Z"
+                />
+                <path d="M5 18v2M19 18v2" />
+            </svg>
+            Products
+        </a>
+
+        <a
+            class="flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-sidebar-foreground-muted transition-colors hover:bg-sidebar-hover hover:text-sidebar-foreground"
+        >
+            <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="size-[18px] shrink-0"
+            >
+                <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
+                <path d="M3 6h18" />
+                <path d="M16 10a4 4 0 0 1-8 0" />
+            </svg>
+            Orders
+        </a>
+
+        <a
+            class="flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-sidebar-foreground-muted transition-colors hover:bg-sidebar-hover hover:text-sidebar-foreground"
+        >
+            <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="size-[18px] shrink-0"
+            >
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+            </svg>
+            Customers
+        </a>
+
+        <a
+            class="flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-sidebar-foreground-muted transition-colors hover:bg-sidebar-hover hover:text-sidebar-foreground"
+        >
+            <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="size-[18px] shrink-0"
+            >
+                <path d="M3 3v18h18" />
+                <rect x="7" y="10" width="3" height="7" rx="1" />
+                <rect x="12" y="6" width="3" height="11" rx="1" />
+                <rect x="17" y="13" width="3" height="4" rx="1" />
+            </svg>
+            Analytics
+        </a>
+
+        <div class="mt-auto"></div>
+
+        <p
+            class="px-3 pt-2 pb-1 text-[11px] font-medium tracking-wider text-sidebar-foreground-muted uppercase"
+        >
+            General
+        </p>
+
+        <a
+            class="flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-sidebar-foreground-muted transition-colors hover:bg-sidebar-hover hover:text-sidebar-foreground"
+        >
+            <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="size-[18px] shrink-0"
+            >
+                <circle cx="12" cy="12" r="3" />
+                <path
+                    d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"
+                />
+            </svg>
+            Settings
+        </a>
     </nav>
 
+    <ds-app-header header (action)="onAction()">
+        <span title>Dashboard</span>
+        <span subtitle>Welcome back — here's your store today.</span>
+        <span action-label>New product</span>
+    </ds-app-header>
+
     <section class="flex flex-col gap-6">
-        <div class="rounded-card border border-border bg-surface p-4 sm:p-6">
-            <h1 class="text-lg font-semibold">Foundation is running</h1>
-            <p class="mt-1 text-sm text-current/70">
+        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <article
+                class="rounded-card border border-border bg-surface p-5 shadow-card"
+            >
+                <div class="flex items-center justify-between">
+                    <span
+                        class="grid size-10 place-items-center rounded-xl bg-brand-50 text-brand-700"
+                    >
+                        <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.8"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            class="size-5"
+                        >
+                            <rect x="2" y="6" width="20" height="12" rx="2" />
+                            <circle cx="12" cy="12" r="2.5" />
+                            <path d="M6 12h.01M18 12h.01" />
+                        </svg>
+                    </span>
+                    <span
+                        class="inline-flex items-center gap-1 rounded-full bg-success-600/10 px-2 py-0.5 text-xs font-medium text-success-600"
+                        >▲ 12.5%</span
+                    >
+                </div>
+                <p class="mt-4 text-sm text-ink-muted">Revenue</p>
+                <p class="mt-1 text-2xl font-semibold text-ink">€48,120</p>
+            </article>
+
+            <article
+                class="rounded-card border border-border bg-surface p-5 shadow-card"
+            >
+                <div class="flex items-center justify-between">
+                    <span
+                        class="grid size-10 place-items-center rounded-xl bg-brand-50 text-brand-700"
+                    >
+                        <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.8"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            class="size-5"
+                        >
+                            <path
+                                d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"
+                            />
+                            <path d="M3 6h18" />
+                            <path d="M16 10a4 4 0 0 1-8 0" />
+                        </svg>
+                    </span>
+                    <span
+                        class="inline-flex items-center gap-1 rounded-full bg-success-600/10 px-2 py-0.5 text-xs font-medium text-success-600"
+                        >▲ 4.1%</span
+                    >
+                </div>
+                <p class="mt-4 text-sm text-ink-muted">Orders</p>
+                <p class="mt-1 text-2xl font-semibold text-ink">1,284</p>
+            </article>
+
+            <article
+                class="rounded-card border border-border bg-surface p-5 shadow-card sm:col-span-2 lg:col-span-1"
+            >
+                <div class="flex items-center justify-between">
+                    <span
+                        class="grid size-10 place-items-center rounded-xl bg-brand-50 text-brand-700"
+                    >
+                        <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.8"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            class="size-5"
+                        >
+                            <path
+                                d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"
+                            />
+                            <circle cx="9" cy="7" r="4" />
+                            <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                        </svg>
+                    </span>
+                    <span
+                        class="inline-flex items-center gap-1 rounded-full bg-danger-600/10 px-2 py-0.5 text-xs font-medium text-danger-600"
+                        >▼ 0.8%</span
+                    >
+                </div>
+                <p class="mt-4 text-sm text-ink-muted">Customers</p>
+                <p class="mt-1 text-2xl font-semibold text-ink">3,942</p>
+            </article>
+        </div>
+
+        <div
+            class="rounded-card border border-border bg-surface p-4 shadow-card sm:p-6"
+        >
+            <h2 class="text-lg font-semibold">Add a product</h2>
+            <p class="mt-1 text-sm text-ink-muted">
                 Atom → molecule → organism → template → page, all wired through
-                <code>&#64;toto/design-system</code>.
+                <code>&#64;dash/design-system</code>.
             </p>
 
             <div class="mt-4 max-w-sm">
-                <ds-form-field label="Project name" placeholder="my-app" />
+                <ds-form-field label="Product name" placeholder="Nordic Sofa" />
             </div>
 
             <div class="mt-4 flex items-center gap-3">
-                <button ds-button (click)="onAction()">Primary action</button>
-                <button ds-button intent="ghost">Ghost</button>
-                <span class="text-sm text-current/60"
+                <button ds-button (click)="onAction()">Save product</button>
+                <button ds-button intent="ghost">Cancel</button>
+                <span class="text-sm text-ink-muted"
                     >clicks: {{ clicks() }}</span
                 >
             </div>
         </div>
 
         <div
-            class="grid gap-6 rounded-card border border-border bg-surface p-4 sm:grid-cols-3 sm:p-6"
+            class="grid gap-6 rounded-card border border-border bg-surface p-4 shadow-card sm:grid-cols-3 sm:p-6"
         >
             <div class="flex flex-col gap-2">
-                <span class="text-sm font-medium">Select (filterable)</span>
+                <span class="text-sm font-medium">Category (filterable)</span>
                 <ds-select
                     [options]="fruits"
                     [(value)]="fruit"
                     [filterable]="true"
-                    placeholder="Pick a fruit"
+                    placeholder="Pick a category"
                 />
-                <span class="text-sm text-current/60"
+                <span class="text-sm text-ink-muted"
                     >value: {{ fruit() ?? '—' }}</span
                 >
             </div>
@@ -53,38 +306,42 @@
             <ds-radio-group legend="Plan" [options]="plans" [(value)]="plan" />
 
             <ds-checkbox-group
-                legend="Toppings (filterable)"
+                legend="Tags (filterable)"
                 [options]="fruits"
                 [(value)]="toppings"
                 [filterable]="true"
             />
         </div>
 
-        <div class="rounded-card border border-border bg-surface p-4 sm:p-6">
+        <div
+            class="rounded-card border border-border bg-surface p-4 shadow-card sm:p-6"
+        >
             <h2 class="mb-3 text-sm font-semibold">Tabs (tab group)</h2>
             <ds-tabs [items]="sections" [(value)]="section" label="Sections">
-                <ds-tab-panel value="overview" class="text-sm text-current/70">
+                <ds-tab-panel value="overview" class="text-sm text-ink-muted">
                     Overview — atoms, molecules and organisms wired together.
                 </ds-tab-panel>
-                <ds-tab-panel value="activity" class="text-sm text-current/70">
+                <ds-tab-panel value="activity" class="text-sm text-ink-muted">
                     Activity — nothing has happened yet.
                 </ds-tab-panel>
-                <ds-tab-panel value="members" class="text-sm text-current/70">
+                <ds-tab-panel value="members" class="text-sm text-ink-muted">
                     Members — invite your team to collaborate.
                 </ds-tab-panel>
                 <ds-tab-panel
                     value="integrations"
-                    class="text-sm text-current/70"
+                    class="text-sm text-ink-muted"
                 >
                     Integrations — connect the tools you already use.
                 </ds-tab-panel>
-                <ds-tab-panel value="billing" class="text-sm text-current/70">
+                <ds-tab-panel value="billing" class="text-sm text-ink-muted">
                     Billing — manage your plan and payment method.
                 </ds-tab-panel>
             </ds-tabs>
         </div>
 
-        <div class="rounded-card border border-border bg-surface p-4 sm:p-6">
+        <div
+            class="rounded-card border border-border bg-surface p-4 shadow-card sm:p-6"
+        >
             <h2 class="mb-3 text-sm font-semibold">
                 Details (description list)
             </h2>
