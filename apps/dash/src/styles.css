@@ -11,6 +11,13 @@
  * public/fonts so the icons work with no external CDN / network access.
  * `font-display: block` avoids a flash of the raw ligature names before the
  * (local, near-instant) font loads.
+ *
+ * The woff2 is SUBSET to only the icons the app uses (see the ds-icon `name`s
+ * and TabItem `icon`s: weekend, grid_view, shopping_bag, group, bar_chart,
+ * inventory_2, settings, dashboard) — ~15 KB instead of the full ~4 MB. It
+ * keeps all four variable axes (FILL, wght, GRAD, opsz). Adding a NEW icon
+ * means re-subsetting the full font with the expanded name list; a missing
+ * glyph shows its raw ligature name.
  */
 @font-face {
     font-family: 'Material Symbols Outlined';
