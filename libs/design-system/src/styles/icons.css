@@ -1,10 +1,11 @@
 /*
  * Material Symbols (Outlined) — icon-font base, shipped by the design system.
  *
- * The font files themselves are loaded from Google Fonts via a <link> in the
- * consuming app's index.html (see apps/dash/src/index.html). This class is what
- * turns a text ligature (e.g. "settings") into the matching glyph; the Icon
- * atom (`span[ds-icon]`) applies it.
+ * The font itself is provided by the consuming app via an `@font-face` for the
+ * 'Material Symbols Outlined' family (dash self-hosts the woff2 from
+ * public/fonts — see apps/dash/src/styles.css; no external CDN). This class is
+ * what turns a text ligature (e.g. "settings") into the matching glyph; the
+ * Icon atom (`span[ds-icon]`) applies it.
  *
  * Deliberately NOT set here: `font-size` is a Tailwind text-size utility and
  * the FILL / weight / optical-size axes are per-instance

@@ -7,6 +7,20 @@
 @import '../../../libs/design-system/src/styles/icons.css';
 
 /*
+ * Self-hosted Material Symbols (Outlined) variable font — bundled from
+ * public/fonts so the icons work with no external CDN / network access.
+ * `font-display: block` avoids a flash of the raw ligature names before the
+ * (local, near-instant) font loads.
+ */
+@font-face {
+    font-family: 'Material Symbols Outlined';
+    font-style: normal;
+    font-weight: 100 700;
+    font-display: block;
+    src: url('/fonts/material-symbols-outlined.woff2') format('woff2');
+}
+
+/*
  * Libraries live outside the app root, so Tailwind v4 must be told where to
  * scan for class names (v4's replacement for the `content` array). Without
  * these, classes used only in libs/ get purged from the build.
