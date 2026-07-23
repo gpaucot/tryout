@@ -16,6 +16,7 @@
                 [routerLinkActive]="activeClasses()"
                 [routerLinkActiveOptions]="{ exact: item.exact ?? false }"
                 #rla="routerLinkActive"
+                (isActiveChange)="onLinkActive(i, $event)"
                 [attr.aria-selected]="rla.isActive"
                 [attr.aria-current]="rla.isActive ? 'page' : null"
                 [attr.aria-disabled]="item.disabled || null"

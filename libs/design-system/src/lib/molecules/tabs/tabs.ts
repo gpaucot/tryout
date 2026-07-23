@@ -58,6 +58,9 @@ export class Tabs<T> {
     private readonly scrollerEl =
         viewChild<ElementRef<HTMLElement>>('scroller');
 
+    /** Index of the active navigation link, reported by `routerLinkActive`. */
+    private readonly activeLinkIndex = signal<number | null>(null);
+
     /** Whether the (horizontal) strip can scroll further in each direction. */
     protected readonly canScrollStart = signal(false);
     protected readonly canScrollEnd = signal(false);
@@ -74,6 +77,23 @@ export class Tabs<T> {
     );
     /** Indicator classes shared by selected buttons and active links. */
     protected readonly activeClasses = computed(() => tabs.active());
+
+    /**
+     * The single tab that participates in the page tab order (roving tabindex).
+     * A tablist exposes exactly one Tab stop: the selected selection tab, else
+     * the active navigation link, else the first enabled tab of either kind.
+     */
+    private readonly rovingIndex = computed(() => {
+        const items = this.items();
+        const selected = items.findIndex(
+            (it) => it.link == null && this.isSelected(it.value),
+        );
+        if (selected !== -1) return selected;
+        const activeLink = this.activeLinkIndex();
+        if (activeLink != null && !items[activeLink]?.disabled)
+            return activeLink;
+        return items.findIndex((it) => !it.disabled);
+    });
 
     constructor() {
         let observer: ResizeObserver | undefined;
@@ -120,7 +140,16 @@ export class Tabs<T> {
     protected scrollTabs(dir: 1 | -1): void {
         const el = this.scrollerEl()?.nativeElement;
         if (!el) return;
-        el.scrollBy({ left: dir * el.clientWidth * 0.75, behavior: 'smooth' });
+        const behavior = this.prefersReducedMotion() ? 'auto' : 'smooth';
+        el.scrollBy({ left: dir * el.clientWidth * 0.75, behavior });
+    }
+
+    /** Honour the user's OS "reduce motion" setting for programmatic scrolls. */
+    private prefersReducedMotion(): boolean {
+        return (
+            typeof matchMedia !== 'undefined' &&
+            matchMedia('(prefers-reduced-motion: reduce)').matches
+        );
     }
 
     protected tabClasses(item: TabItem<T>): string {
@@ -136,18 +165,28 @@ export class Tabs<T> {
             : base;
     }
 
-    /** Roving tabindex: exactly one selection tab is tabbable at a time. */
+    /**
+     * Roving tabindex: exactly one tab — selection tab or nav link — is
+     * tabbable at a time, so `Tab` enters/leaves the strip while the arrow keys
+     * roam within it.
+     */
     protected tabIndex(item: TabItem<T>, index: number): number {
-        if (item.link != null) return 0; // links keep their natural tab order
         if (item.disabled) return -1;
-        const items = this.items();
-        const hasSelection = items.some(
-            (it) => it.link == null && this.isSelected(it.value),
-        );
-        if (hasSelection) return this.isSelected(item.value) ? 0 : -1;
-        // Nothing selected yet: make the first enabled selection tab tabbable.
-        const first = items.findIndex((it) => it.link == null && !it.disabled);
-        return index === first ? 0 : -1;
+        return index === this.rovingIndex() ? 0 : -1;
+    }
+
+    /**
+     * Track which navigation link the router considers active. Deferred to a
+     * microtask so the signal write lands outside the current change-detection
+     * pass (`routerLinkActive` emits mid-render), avoiding an expression-changed
+     * error while keeping the roving index in sync after navigation.
+     */
+    protected onLinkActive(index: number, active: boolean): void {
+        queueMicrotask(() => {
+            if (active) this.activeLinkIndex.set(index);
+            else if (this.activeLinkIndex() === index)
+                this.activeLinkIndex.set(null);
+        });
     }
 
     protected isSelected(v: T): boolean {
@@ -217,7 +256,11 @@ export class Tabs<T> {
     }
 
     private focusIndex(index: number): void {
-        this.tabEls()[index]?.nativeElement.focus();
+        const el = this.tabEls()[index]?.nativeElement;
+        el?.focus();
+        // Keep the roving tab visible on an overflowing strip (instant, so
+        // rapid arrow-key roaming doesn't queue smooth-scroll animations).
+        el?.scrollIntoView?.({ inline: 'nearest', block: 'nearest' });
         // Selection tabs activate on focus; link tabs only move focus.
         const item = this.items()[index];
         if (item && item.link == null) this.value.set(item.value);
