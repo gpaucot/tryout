@@ -9,6 +9,7 @@ import { TestBed } from '@angular/core/testing';
 import type { DescriptionItems } from '@dash/util-types';
 import {
     DescriptionList,
+    type DescriptionListActionEvent,
     type DescriptionListHeadingLevel,
 } from './description-list';
 import { provideDescriptionValuePlugins } from './description-list.plugin';
@@ -24,6 +25,7 @@ import type {
         [orientation]="orientation()"
         [size]="size()"
         [headingLevel]="headingLevel()"
+        (action)="events.push($event)"
     ></ds-description-list>`,
 })
 class Host {
@@ -31,6 +33,7 @@ class Host {
     orientation = signal<DescriptionListOrientation>('stacked');
     size = signal<DescriptionListSize>('md');
     headingLevel = signal<DescriptionListHeadingLevel>(3);
+    events: DescriptionListActionEvent[] = [];
 }
 
 // A consumer-authored plugin component (the extension path).
@@ -57,6 +60,11 @@ function render(items: DescriptionItems, providers: Provider[] = []) {
 
 function rowText(dl: HTMLDListElement, index = 0) {
     return dl.querySelectorAll('dd')[index]?.textContent?.trim();
+}
+
+/** Text content with template whitespace collapsed to single spaces. */
+function text(el: Element | null) {
+    return el?.textContent?.replace(/\s+/g, ' ').trim();
 }
 
 describe('DescriptionList', () => {
@@ -184,7 +192,7 @@ describe('DescriptionList', () => {
             },
         ]);
         const root = fixture.nativeElement as HTMLElement;
-        const heading = root.querySelector('section > h3');
+        const heading = root.querySelector('section h3');
         expect(heading?.textContent?.trim()).toBe('Billing');
         const nested = root.querySelector('section dl');
         expect(nested?.querySelector('dt')?.textContent?.trim()).toBe('Plan');
@@ -231,6 +239,103 @@ describe('DescriptionList', () => {
             );
         expect(topTerms(lists[0])).toEqual(['A', 'B']);
         expect(topTerms(lists[2])).toEqual(['D']);
+    });
+
+    it('renders section actions as inline buttons and emits on click', () => {
+        const section = {
+            label: 'Billing',
+            items: [{ term: 'Plan', value: 'Pro' }],
+            actions: [
+                { id: 'edit', label: 'Edit', icon: 'edit' },
+                { id: 'export', label: 'Export', disabled: true },
+            ],
+        };
+        const { fixture } = render([section]);
+        const root = fixture.nativeElement as HTMLElement;
+        const inline = root.querySelector(
+            'ds-description-list-actions > span:first-child',
+        ) as HTMLElement;
+        // Inline buttons sit beside the label, hidden below the sm breakpoint.
+        expect(inline.className).toContain('hidden');
+        expect(inline.className).toContain('sm:flex');
+        expect(inline.closest('section')?.querySelector('h3')).toBeTruthy();
+        const buttons = Array.from(
+            inline.querySelectorAll('button'),
+        ) as HTMLButtonElement[];
+        expect(buttons.map((b) => text(b))).toEqual(['edit Edit', 'Export']);
+        expect(buttons[1].disabled).toBe(true);
+
+        buttons[0].click();
+        expect(fixture.componentInstance.events).toEqual([
+            { action: section.actions[0], section },
+        ]);
+    });
+
+    it('gives an icon-only action its label as accessible name', () => {
+        const { fixture } = render([
+            {
+                label: 'S',
+                items: [],
+                actions: [
+                    { id: 'rm', label: 'Remove', icon: 'delete', hideLabel: true },
+                ],
+            },
+        ]);
+        const root = fixture.nativeElement as HTMLElement;
+        const button = root.querySelector(
+            'ds-description-list-actions > span:first-child button',
+        ) as HTMLButtonElement;
+        expect(button.getAttribute('aria-label')).toBe('Remove');
+        expect(button.textContent?.trim()).toBe('delete');
+    });
+
+    it('collapses actions into an overflow menu that emits and closes', () => {
+        const section = {
+            label: 'Billing',
+            items: [],
+            actions: [{ id: 'edit', label: 'Edit', icon: 'edit' }],
+        };
+        const { fixture } = render([section]);
+        const root = fixture.nativeElement as HTMLElement;
+        const trigger = root.querySelector(
+            'button[aria-haspopup="menu"]',
+        ) as HTMLButtonElement;
+        // The overflow anchor only shows below the sm breakpoint.
+        expect(trigger.parentElement?.className).toContain('sm:hidden');
+        expect(trigger.getAttribute('aria-expanded')).toBe('false');
+        expect(root.querySelector('[role="menu"]')).toBeNull();
+
+        trigger.click();
+        fixture.detectChanges();
+        expect(trigger.getAttribute('aria-expanded')).toBe('true');
+        const item = root.querySelector(
+            '[role="menu"] [role="menuitem"]',
+        ) as HTMLButtonElement;
+        expect(text(item)).toBe('edit Edit');
+
+        item.click();
+        fixture.detectChanges();
+        expect(fixture.componentInstance.events).toEqual([
+            { action: section.actions[0], section },
+        ]);
+        expect(root.querySelector('[role="menu"]')).toBeNull();
+    });
+
+    it('bubbles actions up from nested sections', () => {
+        const inner = {
+            label: 'Payment method',
+            items: [],
+            actions: [{ id: 'add-card', label: 'Add card' }],
+        };
+        const { fixture } = render([{ label: 'Billing', items: [inner] }]);
+        const root = fixture.nativeElement as HTMLElement;
+        const button = root.querySelector(
+            'section section ds-description-list-actions button',
+        ) as HTMLButtonElement;
+        button.click();
+        expect(fixture.componentInstance.events).toEqual([
+            { action: inner.actions[0], section: inner },
+        ]);
     });
 
     it('resolves consumer plugins inside nested sections', () => {

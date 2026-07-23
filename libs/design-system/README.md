@@ -93,6 +93,16 @@ the nested list; the `headingLevel` input (default `3`) sets the level of
 top-level labels, and every nesting depth uses the next level down, capped at
 `<h6>`.
 
+Sections can also carry `actions` — buttons (icon and/or label) rendered
+beside the section label. Below the `sm` breakpoint they collapse behind a
+3-dots trigger that opens an overflow menu. Every activation, at any nesting
+depth, surfaces through the list's `action` output as
+`{ action, section }`:
+
+```html
+<ds-description-list [items]="details" (action)="onAction($event)" />
+```
+
 ## Extending DescriptionList
 
 `DescriptionList` renders arbitrary value types through a plugin registry. Register

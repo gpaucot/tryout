@@ -78,6 +78,27 @@ export interface DescriptionItem {
 }
 
 /**
+ * An action attached to a description-list section, rendered as a button
+ * beside the section label (and inside an overflow menu on narrow screens).
+ *
+ * `label` always carries the accessible name and the overflow-menu text;
+ * set `hideLabel` for an icon-only button on wide screens.
+ */
+export interface DescriptionAction {
+    /** Identifies the action in the emitted event. */
+    readonly id: string;
+    readonly label: string;
+    /** Leading icon (Material Symbols ligature name, e.g. `"edit"`). */
+    readonly icon?: string;
+    /** Show only the icon on wide screens (requires `icon`). */
+    readonly hideLabel?: boolean;
+    readonly disabled?: boolean;
+}
+
+/** A collection of section actions. */
+export type DescriptionActions = readonly DescriptionAction[];
+
+/**
  * A labelled group of entries nested inside a description list. Sections may
  * contain further sections; renderers derive each label's heading level from
  * the nesting depth.
@@ -85,6 +106,8 @@ export interface DescriptionItem {
 export interface DescriptionSection {
     readonly label: string;
     readonly items: DescriptionItems;
+    /** Actions rendered beside the label. */
+    readonly actions?: DescriptionActions;
 }
 
 /** One entry in a description list: a term/value pair or a labelled section. */

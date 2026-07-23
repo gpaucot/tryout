@@ -4,15 +4,18 @@ import {
     computed,
     forwardRef,
     input,
+    output,
 } from '@angular/core';
 import { cn } from '@dash/ui-styles';
 import type {
+    DescriptionAction,
     DescriptionEntry,
     DescriptionItem,
     DescriptionItems,
     DescriptionSection,
 } from '@dash/util-types';
 import { DescriptionValue } from './description-value';
+import { DescriptionListActions } from './description-list-actions';
 import { DescriptionPluginRegistry } from './description-list.registry';
 import { BUILT_IN_DESCRIPTION_PLUGINS } from './description-list.plugins';
 import { DESCRIPTION_DEFAULT_VALUE_PLUGINS } from './description-list.plugin';
@@ -24,6 +27,13 @@ import {
 
 /** Heading levels a description-list section label may render as. */
 export type DescriptionListHeadingLevel = 2 | 3 | 4 | 5 | 6;
+
+/** Emitted when a section action is activated, however deeply nested. */
+export interface DescriptionListActionEvent {
+    readonly action: DescriptionAction;
+    /** The section the action belongs to. */
+    readonly section: DescriptionSection;
+}
 
 /** A section entry has a label and child entries; an item has a term. */
 function isSection(entry: DescriptionEntry): entry is DescriptionSection {
@@ -46,12 +56,18 @@ type EntryGroup =
  * Entries may also be labelled sections (`{ label, items }`), which render a
  * heading followed by a nested list. `headingLevel` sets the level of
  * top-level section labels; each nesting depth uses the next level down,
- * capped at `<h6>`.
+ * capped at `<h6>`. Section `actions` render as buttons beside the label
+ * (collapsed into an overflow menu on narrow screens) and surface through the
+ * `action` output from any nesting depth.
  */
 @Component({
     selector: 'ds-description-list',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [DescriptionValue, forwardRef(() => DescriptionList)],
+    imports: [
+        DescriptionValue,
+        DescriptionListActions,
+        forwardRef(() => DescriptionList),
+    ],
     providers: [
         DescriptionPluginRegistry,
         {
@@ -70,6 +86,9 @@ export class DescriptionList {
     readonly headingLevel = input<DescriptionListHeadingLevel>(3);
     /** Extra classes forwarded by a composing component. */
     readonly class = input<string>('');
+
+    /** A section action was activated (bubbles up from nested sections). */
+    readonly action = output<DescriptionListActionEvent>();
 
     protected readonly groups = computed<readonly EntryGroup[]>(() => {
         const groups: EntryGroup[] = [];
@@ -103,7 +122,15 @@ export class DescriptionList {
         descriptionList.row({ orientation: this.orientation() }),
     );
     protected readonly sectionClasses = descriptionList.section();
+    protected readonly sectionHeaderClasses = descriptionList.sectionHeader();
     protected readonly sectionLabelClasses = descriptionList.sectionLabel();
     protected readonly termClasses = descriptionList.term();
     protected readonly descriptionClasses = descriptionList.description();
+
+    protected emitAction(
+        section: DescriptionSection,
+        action: DescriptionAction,
+    ): void {
+        this.action.emit({ action, section });
+    }
 }

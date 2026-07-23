@@ -24,8 +24,22 @@ export const descriptionList = {
     }),
     /** A labelled nested section (heading + nested list). */
     section: tv({ base: 'flex min-w-0 flex-col gap-2' }),
+    /** Header row: label on the left, actions on the right. */
+    sectionHeader: tv({ base: 'flex min-w-0 items-center justify-between gap-3' }),
     /** The section heading. Sized relative to the inherited text size. */
-    sectionLabel: tv({ base: 'font-semibold text-current' }),
+    sectionLabel: tv({ base: 'min-w-0 break-words font-semibold text-current' }),
+    /** Inline action buttons — hidden on narrow screens. */
+    actionsInline: tv({ base: 'hidden shrink-0 items-center gap-1 sm:flex' }),
+    /** Overflow-menu anchor — replaces the inline buttons on narrow screens. */
+    actionsOverflow: tv({ base: 'relative shrink-0 sm:hidden' }),
+    /** The dropdown panel of the overflow menu. */
+    actionsMenu: tv({
+        base: 'absolute right-0 top-full z-20 mt-1 flex min-w-36 flex-col rounded-card border border-border bg-surface p-1 shadow-card',
+    }),
+    /** One action inside the overflow menu. */
+    actionsMenuItem: tv({
+        base: 'flex w-full items-center gap-2 rounded-btn px-3 py-2 text-left text-sm text-ink hover:bg-surface-muted disabled:cursor-not-allowed disabled:opacity-50',
+    }),
     /** The `<dl>` of a run of term/value pairs. */
     root: tv({
         base: 'text-current',

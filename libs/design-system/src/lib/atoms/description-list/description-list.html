@@ -17,38 +17,48 @@
             </dl>
         } @else {
             <section [class]="sectionClasses">
-                @switch (headingLevel()) {
-                    @case (2) {
-                        <h2 [class]="sectionLabelClasses">
-                            {{ group.section.label }}
-                        </h2>
+                <div [class]="sectionHeaderClasses">
+                    @switch (headingLevel()) {
+                        @case (2) {
+                            <h2 [class]="sectionLabelClasses">
+                                {{ group.section.label }}
+                            </h2>
+                        }
+                        @case (3) {
+                            <h3 [class]="sectionLabelClasses">
+                                {{ group.section.label }}
+                            </h3>
+                        }
+                        @case (4) {
+                            <h4 [class]="sectionLabelClasses">
+                                {{ group.section.label }}
+                            </h4>
+                        }
+                        @case (5) {
+                            <h5 [class]="sectionLabelClasses">
+                                {{ group.section.label }}
+                            </h5>
+                        }
+                        @default {
+                            <h6 [class]="sectionLabelClasses">
+                                {{ group.section.label }}
+                            </h6>
+                        }
                     }
-                    @case (3) {
-                        <h3 [class]="sectionLabelClasses">
-                            {{ group.section.label }}
-                        </h3>
+                    @if (group.section.actions?.length) {
+                        <ds-description-list-actions
+                            [actions]="group.section.actions!"
+                            [menuLabel]="group.section.label + ': more actions'"
+                            (run)="emitAction(group.section, $event)"
+                        ></ds-description-list-actions>
                     }
-                    @case (4) {
-                        <h4 [class]="sectionLabelClasses">
-                            {{ group.section.label }}
-                        </h4>
-                    }
-                    @case (5) {
-                        <h5 [class]="sectionLabelClasses">
-                            {{ group.section.label }}
-                        </h5>
-                    }
-                    @default {
-                        <h6 [class]="sectionLabelClasses">
-                            {{ group.section.label }}
-                        </h6>
-                    }
-                }
+                </div>
                 <ds-description-list
                     [items]="group.section.items"
                     [orientation]="orientation()"
                     [size]="size()"
                     [headingLevel]="nestedHeadingLevel()"
+                    (action)="action.emit($event)"
                 ></ds-description-list>
             </section>
         }

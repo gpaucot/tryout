@@ -19,6 +19,7 @@ export type { IconSize } from './lib/atoms/icon/icon.variants';
 export {
     DescriptionList,
     type DescriptionListHeadingLevel,
+    type DescriptionListActionEvent,
 } from './lib/atoms/description-list/description-list';
 export type {
     DescriptionListOrientation,

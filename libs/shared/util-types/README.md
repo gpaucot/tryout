@@ -10,7 +10,8 @@ Public API (`@dash/util-types`):
 - **Component data shapes** — `SelectOption<T>` / `SelectOptions<T>` (choices for
   select, radio-group, checkbox-group), `TabItem<T>` / `TabItems<T>` (selection and
   navigation tabs), `DescriptionItem` / `DescriptionSection` / `DescriptionItems`
-  (term/value pairs, optionally grouped into labelled nested sections).
+  (term/value pairs, optionally grouped into labelled nested sections) and
+  `DescriptionAction` / `DescriptionActions` (buttons beside a section label).
 
 Values are compared by identity (`Object.is`), so use primitives or stable
 references for `value` fields.

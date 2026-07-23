@@ -4,6 +4,7 @@ import {
     Button,
     CheckboxGroup,
     DescriptionList,
+    type DescriptionListActionEvent,
     FormField,
     Icon,
     provideDescriptionValuePlugins,
@@ -151,6 +152,15 @@ export class HomePage {
         { term: 'Tier', value: 'gold', type: 'badge' },
         {
             label: 'Billing',
+            actions: [
+                { id: 'edit-billing', label: 'Edit', icon: 'edit' },
+                {
+                    id: 'download-invoice',
+                    label: 'Download invoice',
+                    icon: 'download',
+                    hideLabel: true,
+                },
+            ],
             items: [
                 { term: 'Plan', value: 'Pro' },
                 {
@@ -161,6 +171,7 @@ export class HomePage {
                 },
                 {
                     label: 'Payment method',
+                    actions: [{ id: 'add-card', label: 'Add card', icon: 'add' }],
                     items: [
                         { term: 'Card', value: 'Visa •••• 4242' },
                         { term: 'Auto-renew', value: true, type: 'boolean' },
@@ -170,7 +181,15 @@ export class HomePage {
         },
     ];
 
+    protected readonly lastDetailAction = signal('');
+
     protected onAction(): void {
         this.clicks.update((n) => n + 1);
+    }
+
+    protected onDetailAction(event: DescriptionListActionEvent): void {
+        this.lastDetailAction.set(
+            `${event.action.label} (${event.section.label})`,
+        );
     }
 }
