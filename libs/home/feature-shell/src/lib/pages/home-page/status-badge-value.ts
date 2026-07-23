@@ -27,13 +27,23 @@ export class StatusBadgeValue implements DescriptionValueComponent {
 
     protected readonly label = computed(() => String(this.value() ?? ''));
     protected readonly tone = computed(() => {
-        switch (this.label()) {
+        switch (this.label().toLowerCase()) {
+            case 'in progress':
+            case 'info':
+                return 'bg-info-50 text-info-700';
+            case 'completed':
+            case 'success':
             case 'gold':
-                return 'bg-brand-50 text-brand-700';
+                return 'bg-success-50 text-success-700';
+            case 'returned':
+            case 'warning':
+                return 'bg-warning-50 text-warning-700';
+            case 'cancelled':
+            case 'canceled':
             case 'danger':
-                return 'bg-danger-600/10 text-danger-600';
+                return 'bg-danger-50 text-danger-700';
             default:
-                return 'bg-surface-muted text-current/70';
+                return 'bg-surface-muted text-ink-muted';
         }
     });
 }

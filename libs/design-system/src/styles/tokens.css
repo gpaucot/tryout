@@ -1,52 +1,70 @@
 /*
- * Design tokens (Tailwind v4, CSS-first) — "Flup" warm furniture theme.
+ * Design tokens (Tailwind v4, CSS-first) — "Flup" green dashboard theme.
  *
- * A modern admin-dashboard palette: cream/sand surfaces, an espresso ink,
- * a warm terracotta brand accent (wood tone) and a deep espresso sidebar.
- * These `@theme` values generate utilities (e.g. `bg-brand-500`, `text-ink`,
- * `rounded-card`, `shadow-card`) and CSS custom properties consumed by tv()
- * variant definitions across the design system.
+ * A modern SaaS admin palette: an emerald brand accent, cool near-white
+ * surfaces on a soft lavender-grey app background, a light sidebar rail and a
+ * full semantic status set (info / success / warning / danger) for the order
+ * badges. These `@theme` values generate utilities (e.g. `bg-brand-500`,
+ * `text-ink`, `rounded-card`, `shadow-card`) and CSS custom properties consumed
+ * by tv() variant definitions across the design system.
  */
 @theme {
-    /* Brand — warm terracotta / clay (furniture wood tone). */
-    --color-brand-50: oklch(0.955 0.022 60);
-    --color-brand-100: oklch(0.9 0.045 58);
-    --color-brand-500: oklch(0.63 0.135 47);
-    --color-brand-600: oklch(0.56 0.13 45);
-    --color-brand-700: oklch(0.46 0.11 45);
+    /* Brand — Flup emerald. */
+    --color-brand-50: oklch(0.962 0.02 169.3); /* #e6f7f0 */
+    --color-brand-100: oklch(0.912 0.044 168.9); /* #c7ecdd */
+    --color-brand-500: oklch(0.647 0.142 160.3); /* #11a870 */
+    --color-brand-600: oklch(0.59 0.129 160.7); /* #0e9463 */
+    --color-brand-700: oklch(0.522 0.114 160.7); /* #0b7d53 */
 
-    /* Warm neutral surfaces — cream app background, near-white cards. */
-    --color-surface: oklch(0.995 0.004 85);
-    --color-surface-muted: oklch(0.965 0.01 85);
-    --color-border: oklch(0.9 0.012 80);
+    /* Cool neutral surfaces — white cards on a soft lavender-grey page. */
+    --color-surface: oklch(1 0 0); /* #ffffff */
+    --color-surface-muted: oklch(0.959 0.005 275); /* #f0f1f5 */
+    --color-border: oklch(0.92 0.008 279); /* #e3e4ea */
 
-    /* Foreground — deep espresso ink and a muted variant for secondary text. */
-    --color-ink: oklch(0.28 0.015 60);
-    --color-ink-muted: oklch(0.52 0.015 60);
+    /* Foreground — cool slate ink and a muted variant for secondary text. */
+    --color-ink: oklch(0.3 0.02 265); /* slate-900-ish */
+    --color-ink-muted: oklch(0.55 0.02 265); /* slate-500-ish */
 
-    /* Sidebar — dark espresso rail with warm off-white text. */
-    --color-sidebar: oklch(0.29 0.018 60);
-    --color-sidebar-hover: oklch(0.35 0.02 60);
-    --color-sidebar-foreground: oklch(0.93 0.008 85);
-    --color-sidebar-foreground-muted: oklch(0.72 0.014 80);
+    /* Sidebar — light rail with slate text and a soft-green active state. */
+    --color-sidebar: oklch(1 0 0);
+    --color-sidebar-hover: oklch(0.965 0.005 275);
+    --color-sidebar-foreground: oklch(0.3 0.02 265);
+    --color-sidebar-foreground-muted: oklch(0.56 0.02 265);
 
-    /* Feedback — muted sage for positive deltas, warm red for danger. */
-    --color-success-600: oklch(0.55 0.11 150);
-    --color-danger-600: oklch(0.55 0.2 27);
+    /* Status — the order-badge palette (info / success / warning / danger). */
+    --color-info-50: oklch(0.956 0.015 257.2); /* #eaf1fb */
+    --color-info-100: oklch(0.905 0.023 241.9); /* #d3e2ee */
+    --color-info-600: oklch(0.553 0.164 258.8); /* #2f6fd0 */
+    --color-info-700: oklch(0.475 0.143 259.4); /* #2559ab */
 
-    /* Softer, more generous radii for the modern dashboard look. */
+    --color-success-50: oklch(0.965 0.026 154.5); /* #e7f9ec */
+    --color-success-100: oklch(0.926 0.045 153.3); /* #d1f0d9 */
+    --color-success-600: oklch(0.615 0.142 156); /* #1a9d5f */
+    --color-success-700: oklch(0.539 0.124 156.2); /* #15834f */
+
+    --color-warning-50: oklch(0.967 0.025 81.1); /* #fdf3e2 */
+    --color-warning-100: oklch(0.94 0.039 74.8); /* #fbe8cf */
+    --color-warning-600: oklch(0.644 0.135 70.8); /* #c07d12 */
+    --color-warning-700: oklch(0.549 0.113 70.8); /* #9a6410 */
+
+    --color-danger-50: oklch(0.956 0.017 13.1); /* #fceced */
+    --color-danger-100: oklch(0.907 0.04 12.2); /* #fad6d9 */
+    --color-danger-600: oklch(0.6 0.178 24.2); /* #d64848 */
+    --color-danger-700: oklch(0.518 0.161 24.7); /* #b23636 */
+
+    /* Softer, generous radii for the modern dashboard look. */
     --radius-btn: 0.625rem;
     --radius-card: 1rem;
 
-    /* Soft, warm-tinted elevation used by cards. */
+    /* Soft, cool-tinted elevation used by cards. */
     --shadow-card:
-        0 1px 2px oklch(0.3 0.02 60 / 0.04),
-        0 12px 28px -14px oklch(0.3 0.02 60 / 0.16);
+        0 1px 2px oklch(0.3 0.02 265 / 0.05),
+        0 12px 28px -14px oklch(0.3 0.02 265 / 0.16);
 }
 
 /*
  * Base foreground/background so `text-current` (used throughout the design
- * system) resolves to the espresso ink, and the page sits on the cream
+ * system) resolves to the slate ink, and the page sits on the lavender-grey
  * surface even under overscroll.
  */
 @layer base {
