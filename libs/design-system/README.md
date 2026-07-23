@@ -10,11 +10,11 @@ helpers). Import only from the barrel; deep paths are lint errors.
 Components are organised by atomic level; dependencies flow one way (atoms →
 molecules → organisms → templates), enforced by ESLint import rules.
 
-| Layer     | Components                                                                  |
-| --------- | --------------------------------------------------------------------------- |
-| atoms     | `Button`, `Input`, `Icon`, `DescriptionList`                                |
-| molecules | `FormField`, `Select`, `RadioGroup`, `CheckboxGroup`, `Tabs` (+ `TabPanel`) |
-| organisms | `AppHeader`, `Table`                                                        |
+| Layer     | Components                                                                                     |
+| --------- | --------------------------------------------------------------------------------------------- |
+| atoms     | `Button`, `Input`, `Icon`, `DescriptionList`                                                   |
+| molecules | `FormField`, `Select`, `RadioGroup`, `CheckboxGroup`, `Tabs` (+ `TabPanel`), `MermaidDiagram`  |
+| organisms | `AppHeader`, `Table`                                                                           |
 | templates | `ShellLayout`                                                               |
 
 The public surface is the component classes plus their public variant/size
@@ -116,6 +116,34 @@ providers: [
     }),
 ];
 ```
+
+## Mermaid diagrams
+
+The `MermaidDiagram` molecule renders a [mermaid](https://mermaid.js.org)
+diagram from its text `source`, re-rendering whenever the source changes. The
+drawing is produced by an injected renderer and its SVG is placed into the
+output container; the current state is reflected on the host as `data-status`
+(`loading` | `ready` | `error`) and reported through `(rendered)` /
+`(errored)`. Pass `label` to expose the diagram to assistive tech as
+`role="img"` (omit it and the drawing is decorative):
+
+```html
+<ds-mermaid-diagram [source]="'graph TD; A-->B; A-->C'" label="Build flow" />
+```
+
+The heavy `mermaid` bundle is loaded lazily on first render, so nothing is
+pulled in until a diagram is actually drawn. Configure it once (theme, security
+level, …) at any injector scope:
+
+```ts
+providers: [provideMermaid({ theme: 'neutral' })];
+```
+
+The renderer is an injectable abstraction (`MERMAID_RENDERER`), so a component
+can also be given a stub in tests or a bespoke renderer in production. Because
+the SVG is written imperatively (Angular's HTML sanitizer would strip the
+`<svg>`), the diagram relies on mermaid's own sanitization — keep
+`securityLevel` at `strict`/`sandbox` for untrusted input (the default).
 
 ## Tests
 

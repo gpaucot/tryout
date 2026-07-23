@@ -1,0 +1,23 @@
+@if (status() === 'error') {
+<p role="alert" [class]="errorClasses">
+    <span ds-icon name="error" size="sm" aria-hidden="true"></span>
+    <span>Couldn’t render diagram: {{ errorMessage() }}</span>
+</p>
+} @if (status() === 'loading') {
+<p [class]="loadingClasses" aria-live="polite">Rendering diagram…</p>
+}
+
+<!--
+    Owned by the component: its SVG child is written imperatively (Angular's HTML
+    sanitizer would strip the <svg>), so this element carries no Angular-managed
+    content of its own.
+-->
+<div
+    #output
+    [class]="outputClasses()"
+    [hidden]="status() === 'error'"
+    [attr.role]="label() ? 'img' : null"
+    [attr.aria-label]="label() || null"
+    [attr.aria-hidden]="label() ? null : 'true'"
+    [attr.aria-busy]="status() === 'loading' ? 'true' : null"
+></div>

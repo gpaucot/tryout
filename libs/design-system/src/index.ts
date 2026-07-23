@@ -48,6 +48,18 @@ export type {
     TabsOrientation,
     TabsSize,
 } from './lib/molecules/tabs/tabs.variants';
+export {
+    MermaidDiagram,
+    type MermaidDiagramStatus,
+} from './lib/molecules/mermaid-diagram/mermaid-diagram';
+export {
+    MERMAID_RENDERER,
+    createMermaidRenderer,
+    provideMermaid,
+    type MermaidRenderer,
+    type MermaidConfig,
+    type RenderResult,
+} from './lib/molecules/mermaid-diagram/mermaid-diagram.renderer';
 
 // organisms
 export { AppHeader } from './lib/organisms/app-header/app-header';
