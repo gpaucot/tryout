@@ -39,6 +39,16 @@ export interface TabItem<T> {
     readonly label: string;
     readonly disabled?: boolean;
     /**
+     * Leading icon (Material Symbols ligature name, e.g. `"settings"`), shown
+     * before the label. Decorative — the label carries the accessible name.
+     */
+    readonly icon?: string;
+    /**
+     * Trailing badge, e.g. a count or short status. Rendered as a small pill
+     * after the label; numbers and strings are both accepted.
+     */
+    readonly badge?: string | number;
+    /**
      * RouterLink target. When set, the tab renders as a navigation link
      * (a routed `<a>`) rather than a selection tab.
      */

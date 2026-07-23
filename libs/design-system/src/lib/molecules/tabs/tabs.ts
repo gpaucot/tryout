@@ -16,9 +16,23 @@ import {
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { cn } from '@dash/ui-styles';
 import type { TabItem, TabItems } from '@dash/util-types';
+import { Icon } from '../../atoms/icon/icon';
+import type { IconSize } from '../../atoms/icon/icon.variants';
 import { tabs, type TabsOrientation, type TabsSize } from './tabs.variants';
 
 let nextId = 0;
+
+/**
+ * How selection tabs commit on keyboard roaming.
+ * - `automatic`: focusing a tab (via arrows) selects it immediately — good
+ *   when showing a panel is cheap.
+ * - `manual`: arrows only move focus; `Enter`/`Space` commit the selection —
+ *   preferred when activation is expensive or has side effects.
+ */
+export type TabsActivation = 'automatic' | 'manual';
+
+/** Scroll edges, in logical order (start = up/left, end = down/right). */
+const SCROLL_SIDES = ['start', 'end'] as const;
 
 /**
  * Tabs — molecule.
@@ -37,7 +51,7 @@ let nextId = 0;
 @Component({
     selector: 'ds-tabs',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [RouterLink, RouterLinkActive],
+    imports: [RouterLink, RouterLinkActive, Icon],
     templateUrl: './tabs.html',
     host: { '[class]': 'hostClasses()' },
 })
@@ -48,10 +62,19 @@ export class Tabs<T> {
     readonly value = model<T | undefined>(undefined);
     readonly orientation = input<TabsOrientation>('horizontal');
     readonly size = input<TabsSize>('md');
+    /**
+     * Whether roaming to a selection tab activates it (`automatic`, default) or
+     * only moves focus until `Enter`/`Space` (`manual`). Link tabs always just
+     * move focus regardless.
+     */
+    readonly activation = input<TabsActivation>('automatic');
     /** Accessible label for the tablist. */
     readonly label = input<string>('');
     /** Extra classes forwarded onto the host element. */
     readonly class = input<string>('');
+
+    /** The scroll edges a strip can page toward. */
+    protected readonly scrollSides = SCROLL_SIDES;
 
     private readonly groupId = `ds-tabs-${nextId++}`;
     private readonly tabEls = viewChildren<ElementRef<HTMLElement>>('tabEl');
@@ -77,6 +100,13 @@ export class Tabs<T> {
     );
     /** Indicator classes shared by selected buttons and active links. */
     protected readonly activeClasses = computed(() => tabs.active());
+    /** Trailing badge pill classes. */
+    protected readonly badgeClasses = computed(() => tabs.badge());
+
+    /** Icon size matched to the tab size (kept a touch smaller than text). */
+    protected readonly iconSize = computed<IconSize>(() =>
+        this.size() === 'lg' ? 'md' : 'sm',
+    );
 
     /**
      * The single tab that participates in the page tab order (roving tabindex).
@@ -120,20 +150,38 @@ export class Tabs<T> {
     }
 
     protected scrollButtonClasses(side: 'start' | 'end'): string {
-        return tabs.scrollButton({ side });
+        return tabs.scrollButton({ side, orientation: this.orientation() });
     }
 
-    /** Refresh the can-scroll signals from the scroller's geometry. */
+    /** Whether the strip can still page toward `side`. */
+    protected canScroll(side: 'start' | 'end'): boolean {
+        return side === 'start' ? this.canScrollStart() : this.canScrollEnd();
+    }
+
+    /** Chevron path pointing toward `side`, along the current scroll axis. */
+    protected chevronPath(side: 'start' | 'end'): string {
+        if (this.isHorizontal())
+            return side === 'start' ? 'M12 5l-5 5 5 5' : 'M8 5l5 5-5 5';
+        return side === 'start' ? 'M5 12l5-5 5 5' : 'M5 8l5 5 5-5';
+    }
+
+    /**
+     * Refresh the can-scroll signals from the scroller's geometry, along
+     * whichever axis matches the orientation (x when horizontal, y when
+     * vertical).
+     */
     protected updateScroll(): void {
         const el = this.scrollerEl()?.nativeElement;
-        if (!el || !this.isHorizontal()) {
+        if (!el) {
             this.canScrollStart.set(false);
             this.canScrollEnd.set(false);
             return;
         }
-        const max = el.scrollWidth - el.clientWidth;
-        this.canScrollStart.set(el.scrollLeft > 1);
-        this.canScrollEnd.set(el.scrollLeft < max - 1);
+        const [pos, max] = this.isHorizontal()
+            ? [el.scrollLeft, el.scrollWidth - el.clientWidth]
+            : [el.scrollTop, el.scrollHeight - el.clientHeight];
+        this.canScrollStart.set(pos > 1);
+        this.canScrollEnd.set(pos < max - 1);
     }
 
     /** Page the strip roughly one viewport toward `dir` (1 = end, -1 = start). */
@@ -141,7 +189,10 @@ export class Tabs<T> {
         const el = this.scrollerEl()?.nativeElement;
         if (!el) return;
         const behavior = this.prefersReducedMotion() ? 'auto' : 'smooth';
-        el.scrollBy({ left: dir * el.clientWidth * 0.75, behavior });
+        const amount = dir * 0.75;
+        if (this.isHorizontal())
+            el.scrollBy({ left: amount * el.clientWidth, behavior });
+        else el.scrollBy({ top: amount * el.clientHeight, behavior });
     }
 
     /** Honour the user's OS "reduce motion" setting for programmatic scrolls. */
@@ -198,6 +249,11 @@ export class Tabs<T> {
         return item.link != null;
     }
 
+    /** Whether a tab shows a trailing badge (0 counts; only null/undefined don't). */
+    protected hasBadge(item: TabItem<T>): boolean {
+        return item.badge != null;
+    }
+
     protected select(item: TabItem<T>): void {
         if (item.disabled || item.link != null) return;
         this.value.set(item.value);
@@ -212,7 +268,14 @@ export class Tabs<T> {
         else if (event.key === prev) this.moveFocus(index, -1);
         else if (event.key === 'Home') this.focusEnd(1);
         else if (event.key === 'End') this.focusEnd(-1);
-        else return;
+        else if (event.key === 'Enter' || event.key === ' ') {
+            // Commit the focused selection tab (the only path to activation in
+            // `manual` mode). Link tabs fall through to the browser's native
+            // anchor activation so navigation still happens.
+            const item = this.items()[index];
+            if (!item || item.link != null) return;
+            this.select(item);
+        } else return;
 
         event.preventDefault();
     }
@@ -261,8 +324,11 @@ export class Tabs<T> {
         // Keep the roving tab visible on an overflowing strip (instant, so
         // rapid arrow-key roaming doesn't queue smooth-scroll animations).
         el?.scrollIntoView?.({ inline: 'nearest', block: 'nearest' });
-        // Selection tabs activate on focus; link tabs only move focus.
+        // Automatic activation: selection tabs commit on focus. In manual mode
+        // (or for link tabs) roaming only moves focus — Enter/Space commits via
+        // the native button/anchor activation.
         const item = this.items()[index];
-        if (item && item.link == null) this.value.set(item.value);
+        if (item && item.link == null && this.activation() === 'automatic')
+            this.value.set(item.value);
     }
 }

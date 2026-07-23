@@ -15,7 +15,9 @@ export const tabs = {
         variants: {
             orientation: {
                 horizontal: 'overflow-x-auto scrollbar-none',
-                vertical: '',
+                // Scrolls only when a consumer bounds the height (e.g. a
+                // `max-h-*` on the host); otherwise the strip grows freely.
+                vertical: 'overflow-y-auto scrollbar-none max-h-full',
             },
         },
         defaultVariants: { orientation: 'horizontal' },
@@ -82,23 +84,55 @@ export const tabs = {
     panel: tv({
         base: 'block pt-4 focus-visible:outline-none',
     }),
+    /** Trailing count/status pill rendered after a tab's label. */
+    badge: tv({
+        base: [
+            'inline-flex min-w-4 items-center justify-center rounded-full px-1 text-[0.65rem]',
+            'font-semibold leading-4 bg-current/10 text-current',
+        ],
+    }),
     /**
-     * Edge scroll affordance shown only when a horizontal strip overflows.
-     * Overlays the scroller end with a surface→transparent fade so mouse users
-     * (no visible scrollbar) can page the tabs into view.
+     * Edge scroll affordance shown only when a strip overflows. Overlays the
+     * scroller edge with a surface→transparent fade so mouse users (no visible
+     * scrollbar) can page the tabs into view. Positioned along the scroll axis:
+     * left/right when horizontal, top/bottom when vertical.
      */
     scrollButton: tv({
         base: [
-            'absolute top-0 bottom-px z-10 flex w-9 cursor-pointer items-center',
+            'absolute z-10 flex cursor-pointer items-center justify-center',
             'text-current/60 transition-colors hover:text-current',
             'focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-brand-600',
         ],
         variants: {
-            side: {
-                start: 'left-0 justify-start bg-gradient-to-r from-surface from-55% to-transparent',
-                end: 'right-0 justify-end bg-gradient-to-l from-surface from-55% to-transparent',
+            orientation: {
+                horizontal: 'top-0 bottom-px w-9',
+                vertical: 'left-px right-0 h-9',
             },
+            side: { start: '', end: '' },
         },
+        compoundVariants: [
+            {
+                orientation: 'horizontal',
+                side: 'start',
+                class: 'left-0 justify-start bg-gradient-to-r from-surface from-55% to-transparent',
+            },
+            {
+                orientation: 'horizontal',
+                side: 'end',
+                class: 'right-0 justify-end bg-gradient-to-l from-surface from-55% to-transparent',
+            },
+            {
+                orientation: 'vertical',
+                side: 'start',
+                class: 'top-0 items-start bg-gradient-to-b from-surface from-55% to-transparent',
+            },
+            {
+                orientation: 'vertical',
+                side: 'end',
+                class: 'bottom-0 items-end bg-gradient-to-t from-surface from-55% to-transparent',
+            },
+        ],
+        defaultVariants: { orientation: 'horizontal' },
     }),
 };
 

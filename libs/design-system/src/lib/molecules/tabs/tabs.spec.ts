@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { provideRouter } from '@angular/router';
@@ -231,5 +231,245 @@ describe('Tabs (navigation links)', () => {
         ) as HTMLAnchorElement[];
 
         expect(anchors.map((a) => a.tabIndex)).toEqual([-1, 0]);
+    });
+});
+
+// --- manual activation ----------------------------------------------------
+
+@Component({
+    imports: [Tabs],
+    template: `<ds-tabs
+        [items]="items"
+        [(value)]="value"
+        activation="manual"
+        label="Sections"
+    />`,
+})
+class ManualHost {
+    items: TabItems<string> = [
+        { value: 'overview', label: 'Overview' },
+        { value: 'settings', label: 'Settings' },
+    ];
+    value = signal<string | undefined>('overview');
+}
+
+describe('Tabs (manual activation)', () => {
+    function render() {
+        const fixture = TestBed.createComponent(ManualHost);
+        fixture.detectChanges();
+        const root = fixture.nativeElement as HTMLElement;
+        return { fixture, root };
+    }
+
+    it('roaming moves focus without changing the value', () => {
+        const { fixture, root } = render();
+        const buttons = tabButtons(root);
+        const focusSpy = vi.spyOn(buttons[1], 'focus');
+
+        buttons[0].dispatchEvent(
+            new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }),
+        );
+        fixture.detectChanges();
+
+        // Focus moved to 'settings' but the selection is still 'overview'.
+        expect(focusSpy).toHaveBeenCalled();
+        expect(fixture.componentInstance.value()).toBe('overview');
+    });
+
+    it('Enter commits the focused tab', () => {
+        const { fixture, root } = render();
+        const buttons = tabButtons(root);
+
+        buttons[0].dispatchEvent(
+            new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }),
+        );
+        buttons[1].dispatchEvent(
+            new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }),
+        );
+        fixture.detectChanges();
+
+        expect(fixture.componentInstance.value()).toBe('settings');
+    });
+
+    it('Space commits the focused tab', () => {
+        const { fixture, root } = render();
+        const buttons = tabButtons(root);
+
+        buttons[1].dispatchEvent(
+            new KeyboardEvent('keydown', { key: ' ', bubbles: true }),
+        );
+        fixture.detectChanges();
+
+        expect(fixture.componentInstance.value()).toBe('settings');
+    });
+});
+
+// --- icons & badges -------------------------------------------------------
+
+@Component({
+    imports: [Tabs],
+    template: `<ds-tabs
+        [items]="items"
+        [value]="'overview'"
+        label="Sections"
+    />`,
+})
+class IconBadgeHost {
+    items: TabItems<string> = [
+        { value: 'overview', label: 'Overview', icon: 'dashboard' },
+        { value: 'inbox', label: 'Inbox', badge: 3 },
+        { value: 'empty', label: 'Empty', badge: 0 },
+    ];
+}
+
+describe('Tabs (icons & badges)', () => {
+    function render() {
+        const fixture = TestBed.createComponent(IconBadgeHost);
+        fixture.detectChanges();
+        return fixture.nativeElement as HTMLElement;
+    }
+
+    it('renders a leading icon for items that declare one', () => {
+        const root = render();
+        const [overview, inbox] = tabButtons(root);
+        const icon = overview.querySelector('span[ds-icon]');
+        expect(icon?.textContent?.trim()).toBe('dashboard');
+        // Items without an icon render none.
+        expect(inbox.querySelector('span[ds-icon]')).toBeNull();
+    });
+
+    it('renders a trailing badge, including the zero count', () => {
+        const root = render();
+        const badges = Array.from(
+            root.querySelectorAll('button[role="tab"] > span:not([ds-icon])'),
+        ).map((s) => s.textContent?.trim());
+        // 'inbox' → 3, 'empty' → 0 (0 is a real count, not "absent").
+        expect(badges).toEqual(['3', '0']);
+    });
+});
+
+// --- vertical overflow affordance -----------------------------------------
+
+@Component({
+    imports: [Tabs],
+    template: `<ds-tabs
+        [items]="items"
+        orientation="vertical"
+        label="Sections"
+    />`,
+})
+class VerticalHost {
+    items: TabItems<string> = [
+        { value: 'a', label: 'A' },
+        { value: 'b', label: 'B' },
+    ];
+}
+
+describe('Tabs (vertical overflow)', () => {
+    interface TabsInternals {
+        scrollerEl: () => { nativeElement: HTMLElement };
+        updateScroll: () => void;
+        scrollTabs: (dir: 1 | -1) => void;
+        canScroll: (side: 'start' | 'end') => boolean;
+        chevronPath: (side: 'start' | 'end') => string;
+    }
+
+    function render() {
+        const fixture = TestBed.createComponent(VerticalHost);
+        fixture.detectChanges();
+        const tabs = fixture.debugElement.query(By.directive(Tabs))
+            .componentInstance as unknown as TabsInternals;
+        return { fixture, tabs };
+    }
+
+    it('derives can-scroll from the vertical (block) axis', () => {
+        const { tabs } = render();
+        const el = tabs.scrollerEl().nativeElement;
+        // Simulate an overflowing strip scrolled to the middle.
+        Object.defineProperties(el, {
+            scrollTop: { value: 40, configurable: true },
+            clientHeight: { value: 100, configurable: true },
+            scrollHeight: { value: 200, configurable: true },
+        });
+        tabs.updateScroll();
+
+        expect(tabs.canScroll('start')).toBe(true);
+        expect(tabs.canScroll('end')).toBe(true);
+    });
+
+    it('pages along the vertical axis', () => {
+        const { tabs } = render();
+        const scrollBy = vi.fn();
+        tabs.scrollerEl().nativeElement.scrollBy = scrollBy;
+
+        tabs.scrollTabs(1);
+        expect(scrollBy).toHaveBeenCalledWith(
+            expect.objectContaining({ top: expect.any(Number) }),
+        );
+        expect(scrollBy.mock.calls[0][0]).not.toHaveProperty('left');
+    });
+
+    it('points its chevrons up/down when vertical', () => {
+        const { tabs } = render();
+        expect(tabs.chevronPath('start')).toBe('M5 12l5-5 5 5'); // up
+        expect(tabs.chevronPath('end')).toBe('M5 8l5 5 5-5'); // down
+    });
+});
+
+// --- lazy tab panels ------------------------------------------------------
+
+let lazyChildBuilds = 0;
+
+@Component({
+    selector: 'ds-lazy-child',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    template: 'lazy body',
+})
+class LazyChild {
+    constructor() {
+        lazyChildBuilds++;
+    }
+}
+
+@Component({
+    imports: [Tabs, TabPanel, LazyChild],
+    template: `<ds-tabs [items]="items" [(value)]="value" label="Sections">
+        <ds-tab-panel value="overview">Overview body</ds-tab-panel>
+        <ds-tab-panel value="reports" lazy>
+            <ng-template><ds-lazy-child /></ng-template>
+        </ds-tab-panel>
+    </ds-tabs>`,
+})
+class LazyHost {
+    items: TabItems<string> = [
+        { value: 'overview', label: 'Overview' },
+        { value: 'reports', label: 'Reports' },
+    ];
+    value = signal<string | undefined>('overview');
+}
+
+describe('Tabs (lazy panels)', () => {
+    it('defers content until the tab is first activated, then keeps it', () => {
+        lazyChildBuilds = 0;
+        const fixture = TestBed.createComponent(LazyHost);
+        fixture.detectChanges();
+        const root = fixture.nativeElement as HTMLElement;
+
+        // Inactive lazy panel: nothing built yet.
+        expect(lazyChildBuilds).toBe(0);
+        expect(root.textContent).not.toContain('lazy body');
+
+        // Activate the lazy tab → content mounts once.
+        fixture.componentInstance.value.set('reports');
+        fixture.detectChanges();
+        expect(lazyChildBuilds).toBe(1);
+        expect(root.textContent).toContain('lazy body');
+
+        // Switch away and back: the panel stays mounted (state preserved).
+        fixture.componentInstance.value.set('overview');
+        fixture.detectChanges();
+        fixture.componentInstance.value.set('reports');
+        fixture.detectChanges();
+        expect(lazyChildBuilds).toBe(1);
     });
 });

@@ -22,8 +22,13 @@
                 [attr.aria-disabled]="item.disabled || null"
                 [attr.tabindex]="tabIndex(item, i)"
                 (keydown)="onKeydown($event, i)"
-                >{{ item.label }}</a
             >
+                @if (item.icon) {
+                <span ds-icon [name]="item.icon" [size]="iconSize()"></span>
+                } {{ item.label }} @if (hasBadge(item)) {
+                <span [class]="badgeClasses()">{{ item.badge }}</span>
+                }
+            </a>
             } @else {
             <button
                 #tabEl
@@ -38,19 +43,23 @@
                 (click)="select(item)"
                 (keydown)="onKeydown($event, i)"
             >
-                {{ item.label }}
+                @if (item.icon) {
+                <span ds-icon [name]="item.icon" [size]="iconSize()"></span>
+                } {{ item.label }} @if (hasBadge(item)) {
+                <span [class]="badgeClasses()">{{ item.badge }}</span>
+                }
             </button>
             } }
         </div>
     </div>
 
-    @if (isHorizontal() && canScrollStart()) {
+    @for (side of scrollSides; track side) { @if (canScroll(side)) {
     <button
         type="button"
         tabindex="-1"
         aria-hidden="true"
-        [class]="scrollButtonClasses('start')"
-        (click)="scrollTabs(-1)"
+        [class]="scrollButtonClasses(side)"
+        (click)="scrollTabs(side === 'start' ? -1 : 1)"
     >
         <svg
             class="size-4"
@@ -61,36 +70,13 @@
             aria-hidden="true"
         >
             <path
-                d="M12 5l-5 5 5 5"
+                [attr.d]="chevronPath(side)"
                 stroke-linecap="round"
                 stroke-linejoin="round"
             />
         </svg>
     </button>
-    } @if (isHorizontal() && canScrollEnd()) {
-    <button
-        type="button"
-        tabindex="-1"
-        aria-hidden="true"
-        [class]="scrollButtonClasses('end')"
-        (click)="scrollTabs(1)"
-    >
-        <svg
-            class="size-4"
-            viewBox="0 0 20 20"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.5"
-            aria-hidden="true"
-        >
-            <path
-                d="M8 5l5 5-5 5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-            />
-        </svg>
-    </button>
-    }
+    } }
 </div>
 
 <ng-content />
