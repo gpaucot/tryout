@@ -79,3 +79,85 @@ export interface DescriptionItem {
 
 /** A collection of term/value pairs. */
 export type DescriptionItems = readonly DescriptionItem[];
+
+/** Direction of an active table sort. */
+export type TableSortDirection = 'asc' | 'desc';
+
+/** The active sort of a table: which column (`key`) and which way. */
+export interface TableSort {
+    readonly key: string;
+    readonly direction: TableSortDirection;
+}
+
+/** Horizontal alignment of a table column's content. */
+export type TableAlign = 'left' | 'center' | 'right';
+
+/** Built-in inline editors for editable table cells. */
+export type TableCellEditor = 'text' | 'number';
+
+/**
+ * Configuration for one table column. Purely data-driven: rendering, sorting
+ * and editing are all described here — no templates involved.
+ *
+ * Reading and writing a cell are decoupled from the row shape via optional
+ * functions: `value` reads (defaults to `row[key]`), `format` renders the read
+ * value as text, `parse` turns an editor's raw string back into a value and
+ * `update` applies it to the row (defaults to `{ ...row, [key]: value }`).
+ */
+export interface TableColumn<T> {
+    /** Unique column id. Also the default property read/written on rows. */
+    readonly key: string;
+    readonly header: string;
+    /** Column width in px (virtual scrolling needs fixed widths). Default 160. */
+    readonly width?: number;
+    /** Content alignment. Defaults to `left`. */
+    readonly align?: TableAlign;
+    /**
+     * Pin the column to an edge: pinned columns stay visible while the rest
+     * scroll horizontally. Pinned columns render grouped at their edge, in
+     * config order, regardless of where they appear in the columns array.
+     */
+    readonly pin?: 'left' | 'right';
+    /** Whether clicking the header cycles asc → desc → unsorted. */
+    readonly sortable?: boolean;
+    /** Cell value accessor. Defaults to reading `row[key]`. */
+    readonly value?: (row: T) => unknown;
+    /** Display formatter for the cell text. Defaults to `String(value)`. */
+    readonly format?: (value: unknown, row: T) => string;
+    /**
+     * Comparator over cell values used when sorting. Defaults to a natural
+     * compare (numeric-aware for strings, nullish values last).
+     */
+    readonly compare?: (a: unknown, b: unknown) => number;
+    /** Whether cells in this column can be edited inline (double-click). */
+    readonly editable?: boolean;
+    /** Editor kind for editable cells. Defaults to `text`. */
+    readonly editor?: TableCellEditor;
+    /**
+     * Parse the editor's raw string into a cell value; return `undefined` to
+     * reject the entry and cancel the edit. Defaults per editor: `text` keeps
+     * the string, `number` parses a float (an unparseable entry cancels).
+     */
+    readonly parse?: (raw: string, row: T) => unknown;
+    /** Apply an edited value to a row, returning the new row. */
+    readonly update?: (row: T, value: unknown) => T;
+}
+
+/** A table's column set, in display order. */
+export type TableColumns<T> = readonly TableColumn<T>[];
+
+/** Emitted by a table after an inline cell edit was committed. */
+export interface TableCellEdit<T> {
+    /** The row after the edit. */
+    readonly row: T;
+    /** The row as it was before the edit. */
+    readonly previousRow: T;
+    /** Index of the row in the table's data (original order, not sorted). */
+    readonly rowIndex: number;
+    /** Key of the edited column. */
+    readonly key: string;
+    /** The committed cell value (after `parse`). */
+    readonly value: unknown;
+    /** The cell value before the edit. */
+    readonly previousValue: unknown;
+}

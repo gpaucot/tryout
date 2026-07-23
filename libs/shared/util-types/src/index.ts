@@ -8,4 +8,11 @@ export type {
     TabItems,
     DescriptionItem,
     DescriptionItems,
+    TableSortDirection,
+    TableSort,
+    TableAlign,
+    TableCellEditor,
+    TableColumn,
+    TableColumns,
+    TableCellEdit,
 } from './lib/util-types';

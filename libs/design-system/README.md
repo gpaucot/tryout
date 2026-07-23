@@ -14,7 +14,7 @@ molecules → organisms → templates), enforced by ESLint import rules.
 | --------- | --------------------------------------------------------------------------- |
 | atoms     | `Button`, `Input`, `Icon`, `DescriptionList`                                |
 | molecules | `FormField`, `Select`, `RadioGroup`, `CheckboxGroup`, `Tabs` (+ `TabPanel`) |
-| organisms | `AppHeader`                                                                 |
+| organisms | `AppHeader`, `Table`                                                        |
 | templates | `ShellLayout`                                                               |
 
 The public surface is the component classes plus their public variant/size
@@ -51,6 +51,39 @@ The font files load from Google Fonts via a `<link>` in the consuming app's
 `index.html`; the `.ds-icon` base class ships in
 [`src/styles/icons.css`](./src/styles/icons.css) (apps import it alongside the
 token sheet).
+
+## Table
+
+The `Table` organism is a config-driven data grid: pass `data` plus a
+`TableColumns<T>` config and it renders, sorts and edits with no templates.
+It virtual-scrolls on **both axes** (only the rows and middle columns
+intersecting the viewport are in the DOM) with variable sizes — row heights
+via `rowHeight` (number or per-row function), column widths via each column's
+`width`. The header is pinned, and columns can pin to either edge
+(`pin: 'left' | 'right'`). Clicking a `sortable` header cycles
+asc → desc → unsorted through the two-way `sort` model; double-clicking an
+`editable` cell opens its inline editor (`text` or `number` — Enter/blur
+commits, Escape cancels).
+
+The table is _uncontrolled_: it works on an internal copy of `data` (re-seeded
+when the input changes), applies sorts and edits itself, and reports back via
+`(cellEdit)` (the single change) and `(dataChange)` (the full updated array).
+Size the host to bound the grid:
+
+```html
+<ds-table
+    class="h-96"
+    [data]="rows"
+    [columns]="columns"
+    [rowHeight]="44"
+    [(sort)]="sort"
+    (cellEdit)="onEdit($event)"
+/>
+```
+
+Column behaviour is described per column: `value` reads a cell (default
+`row[key]`), `format` renders it, `compare` sorts it, `parse`/`update` commit
+an edit back onto the row. See `TableColumn<T>` in `@dash/util-types`.
 
 ## Extending DescriptionList
 

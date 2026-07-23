@@ -47,6 +47,7 @@ export type {
 
 // organisms
 export { AppHeader } from './lib/organisms/app-header/app-header';
+export { Table } from './lib/organisms/table/table';
 
 // templates
 export { ShellLayout } from './lib/templates/shell-layout/shell-layout';

@@ -1,0 +1,117 @@
+<div
+    #viewport
+    [class]="viewportClasses"
+    role="grid"
+    [attr.aria-label]="label() || null"
+    [attr.aria-rowcount]="rowCount() + 1"
+    [attr.aria-colcount]="colCount()"
+    (scroll)="onScroll()"
+>
+    <div
+        [class]="headerRowClasses"
+        role="row"
+        aria-rowindex="1"
+        [style.width.px]="layout().totalWidth"
+        [style.height.px]="headerHeight()"
+    >
+        @for (m of renderCols(); track m.key) { @if (m.kind === 'spacer') {
+        <div
+            [class]="spacerClasses"
+            [style.width.px]="m.width"
+            aria-hidden="true"
+        ></div>
+        } @else {
+        <div
+            role="columnheader"
+            [class]="m.headerClass"
+            [style.width.px]="m.width"
+            [style.left.px]="m.stickyLeft"
+            [style.right.px]="m.stickyRight"
+            [attr.aria-colindex]="m.ariaColIndex"
+            [attr.aria-sort]="ariaSort(m)"
+        >
+            @if (m.col.sortable) {
+            <button
+                type="button"
+                [class]="sortButtonClasses(m)"
+                (click)="toggleSort(m.col)"
+            >
+                <span class="truncate">{{ m.col.header }}</span>
+                <svg
+                    class="size-3.5 shrink-0"
+                    [class.opacity-40]="ariaSort(m) === 'none'"
+                    viewBox="0 0 20 20"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    aria-hidden="true"
+                >
+                    <path
+                        [attr.d]="sortPath(m)"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    />
+                </svg>
+            </button>
+            } @else {
+            <span class="truncate">{{ m.col.header }}</span>
+            }
+        </div>
+        } }
+    </div>
+
+    <div
+        [class]="bodyClasses"
+        [style.height.px]="rowCount() ? totalHeight() : null"
+        [style.width.px]="layout().totalWidth"
+    >
+        @if (!rowCount()) {
+        <div [class]="emptyClasses" [style.width.px]="viewportSize().width">
+            {{ emptyText() }}
+        </div>
+        } @for (r of visibleRows(); track r.dataIndex) {
+        <div
+            [class]="rowClasses"
+            role="row"
+            [attr.aria-rowindex]="r.ariaRowIndex"
+            [style.top.px]="r.top"
+            [style.height.px]="r.height"
+            [style.width.px]="layout().totalWidth"
+        >
+            @for (m of renderCols(); track m.key) { @if (m.kind === 'spacer') {
+            <div
+                [class]="spacerClasses"
+                [style.width.px]="m.width"
+                aria-hidden="true"
+            ></div>
+            } @else {
+            <div
+                role="gridcell"
+                [class]="m.cellClass"
+                [style.width.px]="m.width"
+                [style.left.px]="m.stickyLeft"
+                [style.right.px]="m.stickyRight"
+                [attr.aria-colindex]="m.ariaColIndex"
+                (dblclick)="startEdit(m, r)"
+            >
+                @if (isEditing(m, r)) {
+                <input
+                    #editor
+                    ds-input
+                    size="sm"
+                    class="h-7 w-full px-2"
+                    [type]="m.col.editor === 'number' ? 'number' : 'text'"
+                    [value]="editing()!.draft"
+                    (keydown.enter)="commitEditFrom($event)"
+                    (keydown.escape)="cancelEdit()"
+                    (blur)="commitEditFrom($event)"
+                />
+                } @else {
+                <span class="truncate">{{ cellText(m, r.row) }}</span>
+                }
+            </div>
+            } }
+        </div>
+        }
+    </div>
+</div>
