@@ -122,7 +122,9 @@ describe('MermaidDiagram', () => {
         expect(fixture.componentInstance.errored).toHaveBeenCalledWith(
             expect.any(Error),
         );
-        expect(host.querySelector('svg')).toBeNull();
+        // The output container holds no diagram (the notice has its own icon).
+        const output = host.querySelector('div') as HTMLElement;
+        expect(output.childElementCount).toBe(0);
     });
 
     it('recovers from an error on the next successful render', async () => {

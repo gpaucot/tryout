@@ -13,7 +13,6 @@ import {
     viewChild,
 } from '@angular/core';
 import { cn } from '@dash/ui-styles';
-import { Icon } from '../../atoms/icon/icon';
 import { MERMAID_RENDERER } from './mermaid-diagram.renderer';
 import { mermaidDiagram } from './mermaid-diagram.variants';
 
@@ -46,7 +45,6 @@ let nextId = 0;
 @Component({
     selector: 'ds-mermaid-diagram',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [Icon],
     templateUrl: './mermaid-diagram.html',
     host: {
         '[class]': 'hostClasses()',
@@ -139,6 +137,10 @@ export class MermaidDiagram {
             this.status.set('ready');
             this.rendered.emit();
         } catch (error) {
+            // On a parse error mermaid throws but leaves its temporary render
+            // node (keyed off our id) orphaned in <body> — showing its own bomb
+            // graphic. Remove it so only our inline notice is shown.
+            this.removeOrphanedNode();
             if (seq !== this.renderSeq) return;
             host.replaceChildren();
             this.errorMessage.set(
@@ -146,6 +148,15 @@ export class MermaidDiagram {
             );
             this.status.set('error');
             this.errored.emit(error);
+        }
+    }
+
+    /** Drop the temporary nodes mermaid appends to the document during render. */
+    private removeOrphanedNode(): void {
+        if (typeof document === 'undefined') return;
+        // mermaid uses both the raw id and a `d`-prefixed measuring wrapper.
+        for (const id of [this.domId, `d${this.domId}`]) {
+            document.getElementById(id)?.remove();
         }
     }
 }
