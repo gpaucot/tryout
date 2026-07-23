@@ -3,6 +3,9 @@
 /* Design tokens (@theme) — shipped by the design system, consumed app-wide. */
 @import '../../../libs/design-system/src/styles/tokens.css';
 
+/* Material Symbols icon-font base — the ds-icon atom's `.ds-icon` class. */
+@import '../../../libs/design-system/src/styles/icons.css';
+
 /*
  * Libraries live outside the app root, so Tailwind v4 must be told where to
  * scan for class names (v4's replacement for the `content` array). Without

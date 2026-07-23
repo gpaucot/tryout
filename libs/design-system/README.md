@@ -12,7 +12,7 @@ molecules → organisms → templates), enforced by ESLint import rules.
 
 | Layer     | Components                                                                  |
 | --------- | --------------------------------------------------------------------------- |
-| atoms     | `Button`, `Input`, `DescriptionList`                                        |
+| atoms     | `Button`, `Input`, `Icon`, `DescriptionList`                                |
 | molecules | `FormField`, `Select`, `RadioGroup`, `CheckboxGroup`, `Tabs` (+ `TabPanel`) |
 | organisms | `AppHeader`                                                                 |
 | templates | `ShellLayout`                                                               |
@@ -31,6 +31,26 @@ rail). Components never hard-code colours; they compose semantic utilities
 `rounded-card`) that resolve to these tokens, so re-skinning the whole system
 is a single-file edit. Apps opt in by importing the token sheet (see
 `apps/dash/src/styles.css`).
+
+## Icons
+
+The `Icon` atom renders [Material Symbols](https://fonts.google.com/icons)
+(the **Outlined** style) as an icon font. Pass the glyph's ligature name:
+
+```html
+<span ds-icon name="settings"></span>
+<span ds-icon name="shopping_bag" size="sm" [filled]="true"></span>
+```
+
+`size` (`sm` | `md` | `lg`) scales the glyph and matches the optical-size axis;
+`filled` toggles the `FILL` axis and `weight` the stroke `wght`. Icons are
+decorative (`aria-hidden`) unless given a `label`, which exposes them as
+`role="img"`.
+
+The font files load from Google Fonts via a `<link>` in the consuming app's
+`index.html`; the `.ds-icon` base class ships in
+[`src/styles/icons.css`](./src/styles/icons.css) (apps import it alongside the
+token sheet).
 
 ## Extending DescriptionList
 

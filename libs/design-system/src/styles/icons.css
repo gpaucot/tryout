@@ -1,0 +1,28 @@
+/*
+ * Material Symbols (Outlined) — icon-font base, shipped by the design system.
+ *
+ * The font files themselves are loaded from Google Fonts via a <link> in the
+ * consuming app's index.html (see apps/dash/src/index.html). This class is what
+ * turns a text ligature (e.g. "settings") into the matching glyph; the Icon
+ * atom (`span[ds-icon]`) applies it.
+ *
+ * Deliberately NOT set here: `font-size` is a Tailwind text-size utility and
+ * the FILL / weight / optical-size axes are per-instance
+ * `font-variation-settings` — both are owned by the Icon atom, so neither is
+ * hard-coded into this base.
+ */
+@layer base {
+    .ds-icon {
+        font-family: 'Material Symbols Outlined';
+        font-weight: normal;
+        font-style: normal;
+        line-height: 1;
+        letter-spacing: normal;
+        text-transform: none;
+        white-space: nowrap;
+        word-wrap: normal;
+        direction: ltr;
+        font-feature-settings: 'liga';
+        -webkit-font-smoothing: antialiased;
+    }
+}

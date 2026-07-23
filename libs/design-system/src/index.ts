@@ -14,6 +14,8 @@ export type {
 } from './lib/atoms/button/button.variants';
 export { Input } from './lib/atoms/input/input';
 export type { InputSize } from './lib/atoms/input/input.variants';
+export { Icon } from './lib/atoms/icon/icon';
+export type { IconSize } from './lib/atoms/icon/icon.variants';
 export { DescriptionList } from './lib/atoms/description-list/description-list';
 export type {
     DescriptionListOrientation,
