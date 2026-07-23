@@ -9,7 +9,8 @@ Public API (`@dash/util-types`):
 - **Utility types** — `Maybe<T>`, `OneOrMany<T>`, `ElementOf<T>`.
 - **Component data shapes** — `SelectOption<T>` / `SelectOptions<T>` (choices for
   select, radio-group, checkbox-group), `TabItem<T>` / `TabItems<T>` (selection and
-  navigation tabs), `DescriptionItem` / `DescriptionItems` (term/value pairs).
+  navigation tabs), `DescriptionItem` / `DescriptionSection` / `DescriptionItems`
+  (term/value pairs, optionally grouped into labelled nested sections).
 
 Values are compared by identity (`Object.is`), so use primitives or stable
 references for `value` fields.

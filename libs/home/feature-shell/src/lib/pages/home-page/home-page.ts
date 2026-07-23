@@ -149,6 +149,25 @@ export class HomePage {
         },
         { term: 'Regions', value: ['eu-west-1', 'us-east-1'], type: 'array' },
         { term: 'Tier', value: 'gold', type: 'badge' },
+        {
+            label: 'Billing',
+            items: [
+                { term: 'Plan', value: 'Pro' },
+                {
+                    term: 'Renews',
+                    value: 1200,
+                    type: 'currency',
+                    options: { currency: 'EUR', locale: 'en-GB' },
+                },
+                {
+                    label: 'Payment method',
+                    items: [
+                        { term: 'Card', value: 'Visa •••• 4242' },
+                        { term: 'Auto-renew', value: true, type: 'boolean' },
+                    ],
+                },
+            ],
+        },
     ];
 
     protected onAction(): void {

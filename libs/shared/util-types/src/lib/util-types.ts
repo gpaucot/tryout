@@ -77,8 +77,21 @@ export interface DescriptionItem {
     readonly options?: Readonly<Record<string, unknown>>;
 }
 
-/** A collection of term/value pairs. */
-export type DescriptionItems = readonly DescriptionItem[];
+/**
+ * A labelled group of entries nested inside a description list. Sections may
+ * contain further sections; renderers derive each label's heading level from
+ * the nesting depth.
+ */
+export interface DescriptionSection {
+    readonly label: string;
+    readonly items: DescriptionItems;
+}
+
+/** One entry in a description list: a term/value pair or a labelled section. */
+export type DescriptionEntry = DescriptionItem | DescriptionSection;
+
+/** A collection of description-list entries. */
+export type DescriptionItems = readonly DescriptionEntry[];
 
 /** Direction of an active table sort. */
 export type TableSortDirection = 'asc' | 'desc';

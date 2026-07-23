@@ -7,7 +7,26 @@ import { tv, type VariantProps } from 'tailwind-variants';
  * are made public.
  */
 export const descriptionList = {
-    /** The `<dl>` host. */
+    /**
+     * Outermost wrapper: sequences runs of pairs (`<dl>`) and labelled
+     * sections. Carries the text size so section labels inherit it.
+     */
+    container: tv({
+        base: 'flex flex-col text-current',
+        variants: {
+            size: {
+                sm: 'gap-3 text-xs',
+                md: 'gap-4 text-sm',
+                lg: 'gap-5 text-base',
+            },
+        },
+        defaultVariants: { size: 'md' },
+    }),
+    /** A labelled nested section (heading + nested list). */
+    section: tv({ base: 'flex min-w-0 flex-col gap-2' }),
+    /** The section heading. Sized relative to the inherited text size. */
+    sectionLabel: tv({ base: 'font-semibold text-current' }),
+    /** The `<dl>` of a run of term/value pairs. */
     root: tv({
         base: 'text-current',
         variants: {

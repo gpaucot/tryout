@@ -85,6 +85,14 @@ Column behaviour is described per column: `value` reads a cell (default
 `row[key]`), `format` renders it, `compare` sorts it, `parse`/`update` commit
 an edit back onto the row. See `TableColumn<T>` in `@dash/util-types`.
 
+## DescriptionList sections
+
+Entries in a `DescriptionList` can be labelled sections (`{ label, items }`)
+that nest arbitrarily. Each section renders its label as a heading followed by
+the nested list; the `headingLevel` input (default `3`) sets the level of
+top-level labels, and every nesting depth uses the next level down, capped at
+`<h6>`.
+
 ## Extending DescriptionList
 
 `DescriptionList` renders arbitrary value types through a plugin registry. Register

@@ -7,6 +7,8 @@ export type {
     TabItem,
     TabItems,
     DescriptionItem,
+    DescriptionSection,
+    DescriptionEntry,
     DescriptionItems,
     TableSortDirection,
     TableSort,

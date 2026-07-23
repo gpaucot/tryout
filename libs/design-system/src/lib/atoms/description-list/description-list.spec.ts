@@ -7,7 +7,10 @@ import {
 } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import type { DescriptionItems } from '@dash/util-types';
-import { DescriptionList } from './description-list';
+import {
+    DescriptionList,
+    type DescriptionListHeadingLevel,
+} from './description-list';
 import { provideDescriptionValuePlugins } from './description-list.plugin';
 import type {
     DescriptionListOrientation,
@@ -20,12 +23,14 @@ import type {
         [items]="items()"
         [orientation]="orientation()"
         [size]="size()"
+        [headingLevel]="headingLevel()"
     ></ds-description-list>`,
 })
 class Host {
     items = signal<DescriptionItems>([]);
     orientation = signal<DescriptionListOrientation>('stacked');
     size = signal<DescriptionListSize>('md');
+    headingLevel = signal<DescriptionListHeadingLevel>(3);
 }
 
 // A consumer-authored plugin component (the extension path).
@@ -168,6 +173,83 @@ describe('DescriptionList', () => {
             }),
         );
         expect(rowText(dl, 0)).toBe('HI!');
+    });
+
+    it('renders a nested section with an h3 label by default', () => {
+        const { fixture } = render([
+            { term: 'Owner', value: 'gpaucot' },
+            {
+                label: 'Billing',
+                items: [{ term: 'Plan', value: 'Pro' }],
+            },
+        ]);
+        const root = fixture.nativeElement as HTMLElement;
+        const heading = root.querySelector('section > h3');
+        expect(heading?.textContent?.trim()).toBe('Billing');
+        const nested = root.querySelector('section dl');
+        expect(nested?.querySelector('dt')?.textContent?.trim()).toBe('Plan');
+        expect(nested?.querySelector('dd')?.textContent?.trim()).toBe('Pro');
+    });
+
+    it('adapts the heading level per nesting depth, capped at h6', () => {
+        const { fixture } = render([
+            {
+                label: 'L1',
+                items: [
+                    {
+                        label: 'L2',
+                        items: [
+                            { label: 'L3', items: [{ label: 'L4', items: [] }] },
+                        ],
+                    },
+                ],
+            },
+        ]);
+        fixture.componentInstance.headingLevel.set(4);
+        fixture.detectChanges();
+        const root = fixture.nativeElement as HTMLElement;
+        const levels = Array.from(
+            root.querySelectorAll('h2, h3, h4, h5, h6'),
+        ).map((h) => `${h.tagName.toLowerCase()}:${h.textContent?.trim()}`);
+        expect(levels).toEqual(['h4:L1', 'h5:L2', 'h6:L3', 'h6:L4']);
+    });
+
+    it('groups consecutive items around a section into separate <dl> runs', () => {
+        const { fixture } = render([
+            { term: 'A', value: '1' },
+            { term: 'B', value: '2' },
+            { label: 'S', items: [{ term: 'C', value: '3' }] },
+            { term: 'D', value: '4' },
+        ]);
+        const root = fixture.nativeElement as HTMLElement;
+        // Two top-level runs (A+B and D) plus the section's own list.
+        const lists = root.querySelectorAll('dl');
+        expect(lists.length).toBe(3);
+        const topTerms = (dl: Element) =>
+            Array.from(dl.querySelectorAll('dt')).map((t) =>
+                t.textContent?.trim(),
+            );
+        expect(topTerms(lists[0])).toEqual(['A', 'B']);
+        expect(topTerms(lists[2])).toEqual(['D']);
+    });
+
+    it('resolves consumer plugins inside nested sections', () => {
+        const { fixture } = render(
+            [
+                {
+                    label: 'Custom',
+                    items: [{ term: 'Shout', value: 'hi', type: 'shout' }],
+                },
+            ],
+            provideDescriptionValuePlugins({
+                type: 'shout',
+                component: ShoutValue,
+            }),
+        );
+        const root = fixture.nativeElement as HTMLElement;
+        expect(
+            root.querySelector('section dd')?.textContent?.trim(),
+        ).toBe('HI!');
     });
 
     it('lets a registered plugin override a built-in type', () => {

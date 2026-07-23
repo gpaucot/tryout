@@ -1,14 +1,56 @@
-<dl [class]="classes()">
-    @for (item of items(); track $index) {
-    <div [class]="rowClasses()">
-        <dt [class]="termClasses">{{ item.term }}</dt>
-        <dd [class]="descriptionClasses">
-            <ds-description-value
-                [value]="item.value"
-                [type]="item.type ?? 'string'"
-                [options]="item.options ?? {}"
-            ></ds-description-value>
-        </dd>
-    </div>
+<div [class]="containerClasses()">
+    @for (group of groups(); track $index) {
+        @if (group.kind === 'items') {
+            <dl [class]="listClasses()">
+                @for (item of group.items; track $index) {
+                    <div [class]="rowClasses()">
+                        <dt [class]="termClasses">{{ item.term }}</dt>
+                        <dd [class]="descriptionClasses">
+                            <ds-description-value
+                                [value]="item.value"
+                                [type]="item.type ?? 'string'"
+                                [options]="item.options ?? {}"
+                            ></ds-description-value>
+                        </dd>
+                    </div>
+                }
+            </dl>
+        } @else {
+            <section [class]="sectionClasses">
+                @switch (headingLevel()) {
+                    @case (2) {
+                        <h2 [class]="sectionLabelClasses">
+                            {{ group.section.label }}
+                        </h2>
+                    }
+                    @case (3) {
+                        <h3 [class]="sectionLabelClasses">
+                            {{ group.section.label }}
+                        </h3>
+                    }
+                    @case (4) {
+                        <h4 [class]="sectionLabelClasses">
+                            {{ group.section.label }}
+                        </h4>
+                    }
+                    @case (5) {
+                        <h5 [class]="sectionLabelClasses">
+                            {{ group.section.label }}
+                        </h5>
+                    }
+                    @default {
+                        <h6 [class]="sectionLabelClasses">
+                            {{ group.section.label }}
+                        </h6>
+                    }
+                }
+                <ds-description-list
+                    [items]="group.section.items"
+                    [orientation]="orientation()"
+                    [size]="size()"
+                    [headingLevel]="nestedHeadingLevel()"
+                ></ds-description-list>
+            </section>
+        }
     }
-</dl>
+</div>
