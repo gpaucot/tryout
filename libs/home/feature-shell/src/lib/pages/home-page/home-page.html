@@ -276,6 +276,35 @@
         <div
             class="rounded-card border border-border bg-surface p-4 shadow-card sm:p-6"
         >
+            <h2 class="mb-1 text-sm font-semibold">
+                Orders table (Table organism)
+            </h2>
+            <p class="mb-3 text-xs text-ink-muted">
+                10,000 rows × 30 columns, virtualized on both axes with variable
+                row heights (VIP rows are taller) and column widths. Order &amp;
+                Customer are pinned left, Total pinned right (and derived — it
+                re-sums as you edit). Click headers to sort; double-click
+                Customer, Items or a month cell to edit.
+            </p>
+            <ds-table
+                class="h-[28rem]"
+                label="Orders"
+                [data]="orders"
+                [columns]="orderColumns"
+                [rowHeight]="orderRowHeight"
+                [(sort)]="orderSort"
+                (cellEdit)="onOrderEdit($event)"
+            />
+            <p class="mt-2 text-xs text-ink-muted">
+                @if (lastOrderEdit(); as edit) { Last edit — {{ edit.row.id }} ·
+                {{ edit.key }}: {{ edit.previousValue }} → {{ edit.value }} }
+                @else { No edits yet — double-click an editable cell. }
+            </p>
+        </div>
+
+        <div
+            class="rounded-card border border-border bg-surface p-4 shadow-card sm:p-6"
+        >
             <h2 class="mb-3 text-sm font-semibold">Tabs (tab group)</h2>
             <ds-tabs [items]="sections" [(value)]="section" label="Sections">
                 <ds-tab-panel value="overview" class="text-sm text-ink-muted">

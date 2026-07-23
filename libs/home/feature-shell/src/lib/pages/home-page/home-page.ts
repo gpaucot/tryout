@@ -10,6 +10,7 @@ import {
     RadioGroup,
     Select,
     ShellLayout,
+    Table,
     TabPanel,
     Tabs,
 } from '@dash/design-system';
@@ -17,7 +18,15 @@ import type {
     DescriptionItems,
     SelectOptions,
     TabItems,
+    TableCellEdit,
+    TableSort,
 } from '@dash/util-types';
+import {
+    type DemoOrder,
+    makeOrders,
+    ORDER_COLUMNS,
+    orderRowHeight,
+} from './orders-demo';
 import { StatusBadgeValue } from './status-badge-value';
 
 /**
@@ -39,6 +48,7 @@ import { StatusBadgeValue } from './status-badge-value';
         RadioGroup,
         CheckboxGroup,
         DescriptionList,
+        Table,
         Tabs,
         TabPanel,
     ],
@@ -90,6 +100,23 @@ export class HomePage {
         { value: 'returned', label: 'Returned', badge: 15 },
         { value: 'canceled', label: 'Canceled', badge: 6 },
     ];
+
+    // Orders grid — a deliberately huge dataset (10k rows × 30 columns) so
+    // the Table's 2-axis virtualization has something real to chew on.
+    protected readonly orders = makeOrders();
+    protected readonly orderColumns = ORDER_COLUMNS;
+    protected readonly orderRowHeight = orderRowHeight;
+    protected readonly orderSort = signal<TableSort | null>({
+        key: 'date',
+        direction: 'desc',
+    });
+    protected readonly lastOrderEdit = signal<TableCellEdit<DemoOrder> | null>(
+        null,
+    );
+
+    protected onOrderEdit(edit: TableCellEdit<DemoOrder>): void {
+        this.lastOrderEdit.set(edit);
+    }
 
     protected readonly plans: SelectOptions<string> = [
         { value: 'free', label: 'Free' },
