@@ -80,6 +80,17 @@ export class HomePage {
         { value: 'archived', label: 'Archived', disabled: true },
     ];
 
+    // Order tabs with trailing count badges — mirrors the Flup reference: a
+    // status filter bar over the orders table.
+    protected readonly orderTab = signal('all');
+    protected readonly orderTabs: TabItems<string> = [
+        { value: 'all', label: 'All orders', badge: 152 },
+        { value: 'in-progress', label: 'In progress', badge: 54 },
+        { value: 'completed', label: 'Completed', badge: 77 },
+        { value: 'returned', label: 'Returned', badge: 15 },
+        { value: 'canceled', label: 'Canceled', badge: 6 },
+    ];
+
     protected readonly plans: SelectOptions<string> = [
         { value: 'free', label: 'Free' },
         { value: 'pro', label: 'Pro' },

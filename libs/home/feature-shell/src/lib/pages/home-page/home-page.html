@@ -248,6 +248,34 @@
         <div
             class="rounded-card border border-border bg-surface p-4 shadow-card sm:p-6"
         >
+            <h2 class="mb-3 text-sm font-semibold">
+                Orders (tabs with badges)
+            </h2>
+            <ds-tabs [items]="orderTabs" [(value)]="orderTab" label="Orders">
+                <ds-tab-panel value="all" class="text-sm text-ink-muted">
+                    All 152 orders across every status.
+                </ds-tab-panel>
+                <ds-tab-panel
+                    value="in-progress"
+                    class="text-sm text-ink-muted"
+                >
+                    54 orders are currently in progress.
+                </ds-tab-panel>
+                <ds-tab-panel value="completed" class="text-sm text-ink-muted">
+                    77 orders have been completed.
+                </ds-tab-panel>
+                <ds-tab-panel value="returned" class="text-sm text-ink-muted">
+                    15 orders were returned.
+                </ds-tab-panel>
+                <ds-tab-panel value="canceled" class="text-sm text-ink-muted">
+                    6 orders were canceled.
+                </ds-tab-panel>
+            </ds-tabs>
+        </div>
+
+        <div
+            class="rounded-card border border-border bg-surface p-4 shadow-card sm:p-6"
+        >
             <h2 class="mb-3 text-sm font-semibold">Tabs (tab group)</h2>
             <ds-tabs [items]="sections" [(value)]="section" label="Sections">
                 <ds-tab-panel value="overview" class="text-sm text-ink-muted">
