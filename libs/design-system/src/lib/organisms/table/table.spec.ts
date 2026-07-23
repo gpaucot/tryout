@@ -297,3 +297,79 @@ describe('Table', () => {
         );
     });
 });
+
+// --- render performance ------------------------------------------------------
+
+const PERF_COLS = 20;
+const PERF_ROWS = 500;
+
+@Component({
+    imports: [Table],
+    template: `<ds-table
+        [data]="data"
+        [columns]="columns"
+        label="Perf grid"
+    />`,
+})
+class PerfHost {
+    // A representative 20-column mix: pinned edges, sortable, editable.
+    readonly columns: TableColumns<Row> = [
+        { key: 'id', header: 'ID', width: 80, pin: 'left', sortable: true },
+        { key: 'name', header: 'Name', width: 160, editable: true },
+        ...Array.from({ length: PERF_COLS - 3 }, (_, c) => ({
+            key: `m${c}`,
+            header: `Metric ${c}`,
+            width: 110,
+            sortable: c % 2 === 0,
+            editable: true,
+            editor: 'number' as const,
+        })),
+        {
+            key: 'amount',
+            header: 'Amount',
+            width: 120,
+            pin: 'right',
+            sortable: true,
+        },
+    ];
+    readonly data: readonly Row[] = Array.from(
+        { length: PERF_ROWS },
+        (_, i) => {
+            const row: Row = {
+                id: i,
+                name: `Row ${i}`,
+                amount: (i * 37) % 500,
+            };
+            for (let c = 0; c < PERF_COLS - 3; c++) row[`m${c}`] = i * 100 + c;
+            return row;
+        },
+    );
+}
+
+describe('Table render performance', () => {
+    it(`mounts a ${PERF_COLS}×${PERF_ROWS} grid to pixels in under 500ms`, () => {
+        // Warm-up: compile the Table template once so the measurement reflects
+        // rendering, not one-off JIT compilation.
+        const warmup = TestBed.createComponent(PerfHost);
+        warmup.detectChanges();
+        warmup.destroy();
+
+        const start = performance.now();
+        const fixture = TestBed.createComponent(PerfHost);
+        fixture.detectChanges();
+        const root = fixture.nativeElement as HTMLElement;
+        // Full mount path: initial render, viewport measure, window render.
+        sizeViewport(root, 1280, 800);
+        fixture.detectChanges();
+        const elapsed = performance.now() - start;
+
+        // Guard against a vacuous pass: the grid actually rendered content.
+        expect(
+            root.querySelectorAll('[role="gridcell"]').length,
+        ).toBeGreaterThan(0);
+        expect(
+            root.querySelector('[role="grid"]')?.getAttribute('aria-rowcount'),
+        ).toBe(String(PERF_ROWS + 1));
+        expect(elapsed).toBeLessThan(500);
+    });
+});
