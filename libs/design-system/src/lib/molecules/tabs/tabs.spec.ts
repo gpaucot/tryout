@@ -1,5 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { provideRouter } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import type { TabItems } from '@dash/util-types';
@@ -119,6 +120,45 @@ describe('Tabs (selection)', () => {
         expect(fixture.componentInstance.value()).toBe('overview');
         expect(list).toBeTruthy();
     });
+
+    it('scrolls the newly focused tab into view while roaming', () => {
+        const { fixture, root } = renderSelection();
+        const buttons = tabButtons(root);
+        const spy = vi.fn();
+        buttons.forEach((b) => (b.scrollIntoView = spy));
+
+        buttons[0].dispatchEvent(
+            new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }),
+        );
+        fixture.detectChanges();
+        expect(spy).toHaveBeenCalled();
+    });
+
+    it('pages the strip instantly when reduce-motion is preferred', () => {
+        const original = window.matchMedia;
+        window.matchMedia = ((query: string) =>
+            ({
+                matches: true,
+                media: query,
+            }) as MediaQueryList) as typeof window.matchMedia;
+        try {
+            const { fixture } = renderSelection();
+            const tabs = fixture.debugElement.query(By.directive(Tabs))
+                .componentInstance as {
+                scrollerEl: () => { nativeElement: HTMLElement };
+                scrollTabs: (dir: 1 | -1) => void;
+            };
+            const scrollBy = vi.fn();
+            tabs.scrollerEl().nativeElement.scrollBy = scrollBy;
+
+            tabs.scrollTabs(1);
+            expect(scrollBy).toHaveBeenCalledWith(
+                expect.objectContaining({ behavior: 'auto' }),
+            );
+        } finally {
+            window.matchMedia = original;
+        }
+    });
 });
 
 // --- navigation tabs ------------------------------------------------------
@@ -166,5 +206,30 @@ describe('Tabs (navigation links)', () => {
         expect(reports.getAttribute('aria-selected')).toBe('true');
         expect(anchors[0].getAttribute('aria-selected')).toBe('false');
         expect(host).toBeTruthy();
+    });
+
+    it('keeps a single roving tab stop — only the active link is tabbable', async () => {
+        TestBed.configureTestingModule({
+            providers: [
+                provideRouter([
+                    { path: 'home', component: NavHost },
+                    { path: 'reports', component: NavHost },
+                ]),
+            ],
+        });
+
+        const harness = await RouterTestingHarness.create();
+        await harness.navigateByUrl('/reports', NavHost);
+        // The active link is recorded in a microtask; flush it, then re-render.
+        await Promise.resolve();
+        harness.detectChanges();
+
+        const root = (harness.routeNativeElement ??
+            harness.fixture.nativeElement) as HTMLElement;
+        const anchors = Array.from(
+            root.querySelectorAll('a[role="tab"]'),
+        ) as HTMLAnchorElement[];
+
+        expect(anchors.map((a) => a.tabIndex)).toEqual([-1, 0]);
     });
 });
